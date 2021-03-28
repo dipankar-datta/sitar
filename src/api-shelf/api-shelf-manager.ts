@@ -1,8 +1,8 @@
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
 import {
-    EventSubscription,
-    EventHandler,
+    ShelfEventSubscription,
+    ShelfEventHandler,
     ShelfData
 } from '../shelf/shelf-manager';
 
@@ -10,7 +10,7 @@ export type ApiSubscriptionData = {
     data: ShelfData,
     url: string,
     headers: any,
-    subscriptions: Map<string, EventSubscription>
+    subscriptions: Map<string, ShelfEventSubscription>
 }
 
 export interface ApiShelfSubscription {
@@ -22,7 +22,7 @@ export const setApiShelf = async (key: string, url: string, headers?: { [key: st
     ApiStoreManager.setApiShelf(key, url, headers);
 }
 
-export const subscribeApiShelf = (key: string, newEventHandler: EventHandler, triggerNow = false): ApiShelfSubscription => {
+export const subscribeApiShelf = (key: string, newEventHandler: ShelfEventHandler, triggerNow = false): ApiShelfSubscription => {
     return ApiStoreManager.subscribeApiShelf(key, newEventHandler, triggerNow);
 }
 
@@ -62,7 +62,7 @@ export default class ApiStoreManager {
                                 this.apiShelf.set(storageKey, shelf);
                             }
 
-                            shelf.subscriptions.forEach((eventSub: EventSubscription, key: string) => {
+                            shelf.subscriptions.forEach((eventSub: ShelfEventSubscription, key: string) => {
                                 if (eventSub) {
                                     if (shelf) {
                                         eventSub.eventHandler(shelf.data);
@@ -74,7 +74,7 @@ export default class ApiStoreManager {
         }
     }
 
-    static subscribeApiShelf(key: string, newEventHandler: EventHandler, triggerNow = false): ApiShelfSubscription {
+    static subscribeApiShelf(key: string, newEventHandler: ShelfEventHandler, triggerNow = false): ApiShelfSubscription {
         const id = uuid();
         if (key && newEventHandler) {
             const subscriptionData = this.apiShelf.get(key);
