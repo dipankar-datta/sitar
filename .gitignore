@@ -24,3 +24,5 @@ UserInterfaceState.xcuserstate
 .env
 /lib
 /coverage
+
+/src/demo/node_modules

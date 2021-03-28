@@ -34,14 +34,14 @@ export default class ApiStoreManager {
         this.loadApiData(key, url, headers);
     }
 
-    private static loadApiData(key: string, url: string, headers?: { [key: string]: string }) {
-        if (key && url) {
+    private static loadApiData(storageKey: string, url: string, headers?: { [Objkey: string]: string }) {
+        if (storageKey && url) {
             fetch(url, { method: 'GET', headers })
                 .then((response: Response) => {
                     response
                         .json()
                         .then((data: any) => {
-                            let shelf = this.apiShelf.get(key);
+                            let shelf = this.apiShelf.get(storageKey);
                             if (shelf) {
                                 shelf.data.previous = _.cloneDeep(shelf.data.current);
                                 shelf.data.current = data;
@@ -51,7 +51,7 @@ export default class ApiStoreManager {
                             } else {
                                 shelf = {
                                     data: {
-                                        key, 
+                                        key: storageKey, 
                                         current: data,
                                         previous: null
                                     },
@@ -59,7 +59,7 @@ export default class ApiStoreManager {
                                     url,
                                     subscriptions: new Map()
                                 };
-                                this.apiShelf.set(key, shelf);
+                                this.apiShelf.set(storageKey, shelf);
                             }
 
                             shelf.subscriptions.forEach((eventSub: EventSubscription, key: string) => {

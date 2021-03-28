@@ -46,7 +46,7 @@ class LocalStorageManager {
 
     static setLocalStorage(key: string, newData: any) {
         if (key) {
-            let subsData = this.map.get(key);
+            const subsData = this.map.get(key);
             const newDataString = newData ? ((typeof newData === 'string') ? newData : JSON.stringify(newData)) : undefined;
             let dataAdded: any;
             const prevData = localStorage.getItem(key); 
@@ -100,13 +100,13 @@ class LocalStorageManager {
         return { id, unsubscribeLocalStorage: () => this.unsubscribeLocalStorage(key, id) };
     }
 
-    static deleteLocalStorage(key: string): boolean {
-        const data = localStorage.getItem(key);
-        localStorage.removeItem(key);
-        const deleted = localStorage.getItem(key) === null && data !== null;
+    static deleteLocalStorage(storageKey: string): boolean {
+        const data = localStorage.getItem(storageKey);
+        localStorage.removeItem(storageKey);
+        const deleted = localStorage.getItem(storageKey) === null && data !== null;
         
         if (deleted) {
-            const subscriptionData = this.map.get(key);
+            const subscriptionData = this.map.get(storageKey);
             subscriptionData?.subscriptions.forEach((value: LocalStorageEventSubscription, key: string) => {
                 value.eventHandler({
                     current: null,
@@ -114,7 +114,7 @@ class LocalStorageManager {
                     key
                 });
             });
-            this.map.delete(key);
+            this.map.delete(storageKey);
         }
         
         return deleted;

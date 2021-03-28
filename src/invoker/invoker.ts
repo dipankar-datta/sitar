@@ -31,7 +31,7 @@ class Invoker {
 
     static invoke(key: string, newData?: any) {
         if (key) {
-            let subsData = this.map.get(key);
+            const subsData = this.map.get(key);
             subsData?.subscriptions.forEach((eventSub: InvokerEventSubscription) => {               
                 eventSub?.eventHandler(newData);               
             });

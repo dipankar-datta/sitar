@@ -83,7 +83,7 @@ export class SetManager {
     static removeFromSet(key: string, delData: any | any[]) {
         const subsData = this.map.get(key);
         if (subsData?.set) {
-            let toDelete = subsData.set.remove(delData);
+            const toDelete = subsData.set.remove(delData);
             if (toDelete.length > 0) {
                 subsData.subscriptions.forEach((eventSub: SetEventSubscription) => {
                     if (eventSub) {

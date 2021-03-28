@@ -46,7 +46,7 @@ class SessionStorageManager {
 
     static setSessionStorage(key: string, newData: any) {
         if (key) {
-            let subsData = this.map.get(key);
+            const subsData = this.map.get(key);
             const newDataString = handleJsonStringify(newData);
             let dataAdded: any;
             const prevData = sessionStorage.getItem(key); 
@@ -100,13 +100,13 @@ class SessionStorageManager {
         return { id, unsubscribeSessionStorage: () => this.unsubscribeSessionStorage(key, id) };
     }
 
-    static deleteSessionStorage(key: string): boolean {
-        const currentData = sessionStorage.getItem(key);
-        sessionStorage.removeItem(key);
-        const deleted = sessionStorage.getItem(key) === null && currentData !== null;
+    static deleteSessionStorage(storageKey: string): boolean {
+        const currentData = sessionStorage.getItem(storageKey);
+        sessionStorage.removeItem(storageKey);
+        const deleted = sessionStorage.getItem(storageKey) === null && currentData !== null;
         
         if (deleted) {
-            const subscriptionData = this.map.get(key);
+            const subscriptionData = this.map.get(storageKey);
             subscriptionData?.subscriptions.forEach((value: SessionStorageEventSubscription, key: string) => {
                 value.eventHandler({
                     current: null,
@@ -114,7 +114,7 @@ class SessionStorageManager {
                     key
                 });
             });
-            this.map.delete(key);
+            this.map.delete(storageKey);
         }
         
         return deleted;

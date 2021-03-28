@@ -53,7 +53,7 @@ class MapManager {
         if (mapKey) {
             let subData = this.map.get(mapKey);
             const newDataClone = _.cloneDeep(newData);
-            let prevData: any = undefined;
+            let prevData: any;
             if (subData) {
                 prevData = subData.map.get(objKey);
                 subData.map.set(objKey, newDataClone);
