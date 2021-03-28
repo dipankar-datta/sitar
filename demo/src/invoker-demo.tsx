@@ -93,8 +93,7 @@ class InvokerUpdater extends Component<any, IInvokerUpdaterState> {
     }
 
     setHandler = () => {
-        // invoke(INVOKER_TARGET_KEY, this.state.localData);
-        invoke(INVOKER_TARGET_KEY);
+        invoke(INVOKER_TARGET_KEY, this.state.localData);
     }
 
     unsubscribeHandler = () => {
