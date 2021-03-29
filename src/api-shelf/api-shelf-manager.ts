@@ -22,8 +22,8 @@ export const setApiShelf = async (key: string, url: string, headers?: { [key: st
     ApiStoreManager.setApiShelf(key, url, headers);
 }
 
-export const subscribeApiShelf = (key: string, newEventHandler: ShelfEventHandler, triggerNow = false): ApiShelfSubscription => {
-    return ApiStoreManager.subscribeApiShelf(key, newEventHandler, triggerNow);
+export const subscribeApiShelf = (key: string, callback: ShelfEventHandler, triggerNow = false): ApiShelfSubscription => {
+    return ApiStoreManager.subscribeApiShelf(key, callback, triggerNow);
 }
 
 export default class ApiStoreManager {
@@ -65,7 +65,7 @@ export default class ApiStoreManager {
                             shelf.subscriptions.forEach((eventSub: ShelfEventSubscription, key: string) => {
                                 if (eventSub) {
                                     if (shelf) {
-                                        eventSub.eventHandler(shelf.data);
+                                        eventSub.callback(shelf.data);
                                     }
                                 }
                             });
@@ -74,16 +74,16 @@ export default class ApiStoreManager {
         }
     }
 
-    static subscribeApiShelf(key: string, newEventHandler: ShelfEventHandler, triggerNow = false): ApiShelfSubscription {
+    static subscribeApiShelf(key: string, callback: ShelfEventHandler, triggerNow = false): ApiShelfSubscription {
         const id = uuid();
-        if (key && newEventHandler) {
+        if (key && callback) {
             const subscriptionData = this.apiShelf.get(key);
             if (subscriptionData) {
-                subscriptionData.subscriptions.set(id, { subscriptionId: id, eventHandler: newEventHandler });
+                subscriptionData.subscriptions.set(id, { subscriptionId: id, callback });
 
                 if (triggerNow) {
                     if (subscriptionData.data) {
-                        newEventHandler(_.cloneDeep(subscriptionData.data));
+                        callback(_.cloneDeep(subscriptionData.data));
                     }
                 }
             } else {
@@ -91,7 +91,7 @@ export default class ApiStoreManager {
                     data: {current: null, previous: null, key},
                     url: '',
                     headers: {},
-                    subscriptions: new Map().set(id, {subscriptionId: id, eventHandler: newEventHandler})
+                    subscriptions: new Map().set(id, {subscriptionId: id, callback})
                 }
                 this.apiShelf.set(key, subsData);
             }

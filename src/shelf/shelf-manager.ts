@@ -11,7 +11,7 @@ export type ShelfEventHandler = (data: ShelfData) => void;
 
 export interface ShelfEventSubscription {
     subscriptionId: string,
-    eventHandler: ShelfEventHandler
+    callback: ShelfEventHandler
 }
 
 export interface ShelfSubscription {
@@ -28,8 +28,8 @@ export const setShelf = (key: string, newData: any) => {
     ShelfManager.setShelf(key, newData);
 }
 
-export const subscribeShelf = (key: string, newEventHandler: ShelfEventHandler, triggerNow = false): ShelfSubscription => {
-    return ShelfManager.subscribeShelf(key, newEventHandler, triggerNow);
+export const subscribeShelf = (key: string, callback: ShelfEventHandler, triggerNow = false): ShelfSubscription => {
+    return ShelfManager.subscribeShelf(key, callback, triggerNow);
 }
 
 export const getShelfData = (key: string): any => {
@@ -61,23 +61,23 @@ class ShelfManager {
             shelf.subscriptions.forEach((eventSub: ShelfEventSubscription) => {
                 if (eventSub) {
                     if (shelf) {
-                        eventSub.eventHandler(shelf.data);
+                        eventSub.callback(shelf.data);
                     }
                 }
             });
         }
     }
 
-    static subscribeShelf(key: string, newEventHandler: ShelfEventHandler, triggerNow = false): ShelfSubscription {
+    static subscribeShelf(key: string, callback: ShelfEventHandler, triggerNow = false): ShelfSubscription {
         const id = uuid();
-        if (key && newEventHandler) {
+        if (key && callback) {
             const subscriptionData = this.shelf.get(key);
             if (subscriptionData) {
-                subscriptionData.subscriptions.set(id, { subscriptionId: id, eventHandler: newEventHandler });
+                subscriptionData.subscriptions.set(id, { subscriptionId: id, callback});
 
                 if (triggerNow) {
                     if (subscriptionData.data) {
-                        newEventHandler(_.cloneDeep(subscriptionData.data));
+                        callback(_.cloneDeep(subscriptionData.data));
                     }
                 }
             } else {
@@ -88,7 +88,7 @@ class ShelfManager {
                     },
                     subscriptions: new Map()
                 };
-                subsData.subscriptions.set(id, {subscriptionId: id, eventHandler: newEventHandler});
+                subsData.subscriptions.set(id, {subscriptionId: id, callback});
                 this.shelf.set(key, subsData);
             }
         }
