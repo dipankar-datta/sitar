@@ -193,7 +193,7 @@ import {loadMap} from 'sitar';
 loadMap('DEMO_MAP_KEY', {"alfa": 100, "beta": 'Hello Sitar', "gamma": true});
 ```
 
-### **3.3 getMap(subscriptionKey: string): Map<any,any> | undefined **
+### **3.3 getMap(subscriptionKey: string): Map<any,any> | undefined**
 getMap returns the latest version of the map stored into browser memory for the subscription key.
 
 #### **Params**
