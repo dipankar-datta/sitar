@@ -1,6 +1,6 @@
 # Sitar
 
-**Introduction**
+## Introduction
 
 Sitar is a JavaScript library build using TypeScript and is compatible with both JavaScript and TypeScript.
 
@@ -8,13 +8,13 @@ Sitar attemps to simplify browser side storage management using events.
 
 Currently Sitar provides following modules as part of it's implementation.
 
-### 1. Shelf
-### 2. API Shelf
-### 3. Map
-### 4. Set
-### 5. Local Storage
-### 6. Session Storage
-### 7. Invoker  
+### **1. Shelf**
+### **2. API Shelf**
+### **3. Map**
+### **4. Set**
+### **5. Local Storage**
+### **6. Session Storage**
+### **7. Invoker**
 
 <br/>
  
@@ -50,7 +50,7 @@ subscribeShelf subscribes changes for any object against a specific key. Basical
 >> **current:** This contains the latest version of the object.<br>
 >> **previous:** This contains the previous version of the object.<br>
 >> **key:** The key for which it was subscribed. <br>
-
+>
 >**triggerNow:** This is an optional boolean field. On passing this field as true, the provided eventHanler function will be triggered immediately with current data. This is helpful when it is understood that the target object or data is already available in the memory and it can be accessed immediately along with subscribing it. <br>
 
 #### **Returns**
@@ -132,7 +132,7 @@ subscribeApiShelf function takes two mandatory parameters and one optional param
 >> **current:** This contains the latest version of the object.<br>
 >> **previous:** This contains the previous version of the object.<br>
 >> **key:** The key for which it was subscribed. <br>
-
+>
 >**triggerNow:** This is an optional boolean field. On passing this field as true, the provided eventHanler function will be triggered immediately with current data. This is helpful when it is understood that the target object or data is already available in the memory and it can be accessed immediately along with subscribing it. <br>
 
 #### **Returns**
@@ -183,8 +183,8 @@ setMap('DEMO_MAP_KEY', 'alfa', 100);
 loadMap takes an object against a subscription key and loads the object into the Map in browser memory. Once the object is revieved, each key in the object is treaded as individual entry for the map and then all the key value pairs of the object is stored a individual entry in the map. This is ideal for use cases where a whole set of key value pairs are needed to be loaded into the map at once.
 
 #### **Params**
->subscriptionKey: Name or unique identifier of the API data. This can be any string name. This should be unique for the kind data we store. This is the subscription key. This is a mandatory field <br>
->obj: obj is the object with key value pairs we intend to store in the map at once.<br>
+>**subscriptionKey:** Name or unique identifier of the API data. This can be any string name. This should be unique for the kind data we store. This is the subscription key. This is a mandatory field <br>
+>**obj:** obj is the object with key value pairs we intend to store in the map at once.<br>
 
 #### **Example**
 ```
@@ -266,4 +266,105 @@ import {clearMap} from 'sitar';
 
 const removed = clearMap('DEMO_MAP_KEY');
 console.log(`Is removed : ${removed}`);
+```
+
+## 4. Set
+Set is a data structure that stores unique data in browser's memory. It provides the data as a list or array but internally it maintains the data in a more complex manner. Set does not allow storing duplicates. It allows storing null and undefined.
+
+Currently set provides following functionalities.
+
+>**setSet** <br>
+>**getSet** <br>
+>**subscribeSet** <br>
+>**removeFromSet** <br>
+>**clearSet**
+
+### **4.1 setSet(subscriptionKey: string, data: any | any[])**
+setSet stores single or multiple items into the Set in the browser's memory.
+
+#### **Params**
+>**subscriptionKey:** Name or unique identifier of Set. This can be any string name. This should be unique for the kind Set we store. This is the subscription key. This is a mandatory field <br>
+>**data:** This is the data the application inted to store in the Set. This can be single data or list of data. In case the data is a list of data, individual item in the data list is stored as individual item in the the Set. This is a mandatory field <br>
+
+```
+import {setSet} from 'sitar';
+
+setSet('DEMO_SET_KEY', {"alfa": 10, "beta": 20});
+setSet('DEMO_ANOTHER_SET_KEY', ["White", "Red", "Green"]);
+```
+
+### **4.2 getSet(subscriptionKey: string): any[] | undefined**
+getSet returns the latest version of the Set for the subscription key from browser's memory.
+
+#### **Params**
+>**subscriptionKey:** Name or unique identifier of Set. This can be any string name. This should be unique for the kind Set we store. This is the subscription key. This is a mandatory field <br>
+
+#### **Returns**
+getSet returns the Set data for the subscription key. In case the Set has been deleted or the key is invalid, then it returns undefined.
+
+```
+import {getSet} from 'sitar';
+
+const setData = getSet('DEMO_SET_KEY');
+if (setData) {
+    console.log(setData);
+}
+```
+
+### **4.3 subscribeSet(subscriptionKey: string, callback: SetEventHandler, triggerNow = false): SetSubscription**
+subscribeSet is used for subscribing any changes in the Set.
+
+#### **Params**
+>**subscriptionKey:** Name or unique identifier of Set. This can be any string name. This should be unique for the kind Set we store. This is the subscription key. This is a mandatory field <br>
+>**callback:** callback is a callback function that gets triggered whenever there are changes in the Set for the subscription key. This is a mandatory field. callback recieves an object when it is triggered. That object has following three information <br>
+>>**added:** This field contains the items which has been added as latest change in the Set.<br>
+>>**removed:** This field contains the items which has been removed as latest change in the Set.<br>
+>>**set:** This field contains the latest version of the Set.<br>
+>
+>**triggerNow:** This is an optional boolean field. This is useful when we need the Set data immediately and at the same time we need to subscribe for any changes in the Set. In such cases we need to provide this parameter as true.
+
+#### **Returns**
+> **SetSubscription:** subscribeSet returns SetSubscription object which contains subscription id and unsubscribeSet() function. unsubscribeSet() function helps unsubscribing the subscription. When we need to unsubscribe the Set, then we can call unsubscribeSet function we recieved in the SetSubscription object while subscribing the Set.
+
+
+```
+import {subscribeSet} from 'sitar';
+
+const subscription = subscribeSet('DEMO_SET_KEY', (data: SetData) => {
+    console.log("Added item: ", data?.added);
+    console.log("Removed item: ", data?.removed);
+    console.log("Set data: ", data.set);
+}, true);
+
+subscription.unsubscribeSet(); // Should be called when subscription is no longer required or scope of this code is going to be cleared.
+```
+
+### **4.4 removeFromSet(subscriptionKey: string, setItem: any | any[])**
+removeFromSet removes provided item or items from the Set.
+
+#### **Params**
+> **subscriptionKey:** Name or unique identifier of Set. This can be any string name. This should be unique for the kind Set we store. This is the subscription key. This is a mandatory field <br>
+> **setItem:** This can be single data or list of data which needs to be removed from the Set. Upon deletion, it triggers all the subscription callback with removed items as deleted items, added items as null and then set as the latest set version.
+
+```
+import {removeFromSet} from 'sitar';
+
+removeFromSet('DEMO_SET_KEY', {"alfa": 10});
+
+```
+### **4.5 clearSet(subscriptionKey: string): boolean**
+clearSet deleted the entire Set for the subscription key. While deleting the Set, it also triggers all the subscription callbacks with null data for added, removed and set.
+
+#### **Params**
+> **subscriptionKey:** Name or unique identifier of Set. This can be any string name. This should be unique for the kind Set we store. This is the subscription key. This is a mandatory field <br>
+
+#### **Returns**
+> **boolean:** Returns true if the Set has been successfully and returns false otherwise.<br>
+
+```
+import {clearSet} from 'sitar';
+
+const removed = clearSet('DEMO_SET_KEY');
+
+console.log("Set removed: ", removed);
 ```

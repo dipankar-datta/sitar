@@ -5,14 +5,14 @@ import { CustomSet } from './custom-set';
 export interface SetData {
     added?: any,
     removed?: any,
-    set: any[]
+    set: any[] | null
 }
 
 export type SetEventHandler = (data: SetData) => void;
 
 export interface SetEventSubscription {
     subscriptionId: string,
-    eventHandler: SetEventHandler
+    callback: SetEventHandler
 }
 
 export interface SetSubscription {
@@ -25,33 +25,33 @@ export type SetSubscriptionData = {
     subscriptions: Map<string, SetEventSubscription>
 }
 
-export const setSet = (mapKey: string, newData: any | any[])  => {
-    SetManager.setSet(mapKey, newData);
+export const setSet = (subscriptionKey: string, data: any | any[])  => {
+    SetManager.setSet(subscriptionKey, data);
 }
 
-export const subscribeSet = (key: string, newEventHandler: SetEventHandler, triggerNow = false): SetSubscription => {
-    return SetManager.subscribe(key, newEventHandler, triggerNow);
+export const subscribeSet = (subscriptionKey: string, callback: SetEventHandler, triggerNow = false): SetSubscription => {
+    return SetManager.subscribeSet(subscriptionKey, callback, triggerNow);
 }
 
-export const getSet = (key: string): any[] | undefined => {
-    return SetManager.getSet(key);
+export const getSet = (subscriptionKey: string): any[] | undefined => {
+    return SetManager.getSet(subscriptionKey);
 }
 
-export const clearSet = (key: string) => {
-    return SetManager.clearSet(key);
+export const clearSet = (subscriptionKey: string): boolean => {
+    return SetManager.clearSet(subscriptionKey);
 }
 
-export const removeFromSet = (key: string, setItem: any | any[]) => {
-    return SetManager.removeFromSet(key, setItem);
+export const removeFromSet = (subscriptionKey: string, setItem: any | any[]) => {
+    return SetManager.removeFromSet(subscriptionKey, setItem);
 }
 
 export class SetManager {
 
     private static map: Map<string, SetSubscriptionData> = new Map();    
 
-    static setSet(setKey: string, newData: any | any[]) {
-        if (setKey) {
-            let subData = this.map.get(setKey);  
+    static setSet(subscriptionKey: string, newData: any | any[]) {
+        if (subscriptionKey) {
+            let subData = this.map.get(subscriptionKey);  
             let dataAdded: any[] = [];
             if (subData) {
                 dataAdded = subData.set.add(newData);
@@ -60,7 +60,7 @@ export class SetManager {
                     set: new CustomSet(newData),
                     subscriptions: new Map()
                 };
-                this.map.set(setKey, subData);
+                this.map.set(subscriptionKey, subData);
             }
 
             if (dataAdded.length > 0) {
@@ -72,7 +72,7 @@ export class SetManager {
                                 added:  dataAdded,
                                 set: _.cloneDeep(subData.set.list)
                             }
-                            eventSub.eventHandler(eventData);
+                            eventSub.callback(eventData);
                         }
                     }
                 });
@@ -80,8 +80,8 @@ export class SetManager {
         }
     }
 
-    static removeFromSet(key: string, delData: any | any[]) {
-        const subsData = this.map.get(key);
+    static removeFromSet(subscriptionKey: string, delData: any | any[]) {
+        const subsData = this.map.get(subscriptionKey);
         if (subsData?.set) {
             const toDelete = subsData.set.remove(delData);
             if (toDelete.length > 0) {
@@ -93,7 +93,7 @@ export class SetManager {
                                 added:  null,
                                 set: _.cloneDeep(subsData.set.list)
                             }
-                            eventSub.eventHandler(eventData);
+                            eventSub.callback(eventData);
                         }
                     }
                 });
@@ -101,12 +101,12 @@ export class SetManager {
         }
     }
 
-    static subscribe(key: string, newEventHandler: SetEventHandler, triggerNow = false): SetSubscription {
+    static subscribeSet(subscriptionKey: string, callback: SetEventHandler, triggerNow = false): SetSubscription {
         const id = uuid();
-        if (key && newEventHandler) {
-            const subscriptionData = this.map.get(key);
+        if (subscriptionKey && callback) {
+            const subscriptionData = this.map.get(subscriptionKey);
             if (subscriptionData) {
-                subscriptionData.subscriptions.set(id, { subscriptionId: id, eventHandler: newEventHandler });
+                subscriptionData.subscriptions.set(id, { subscriptionId: id, callback: callback });
 
                 if (triggerNow) {
                     if (subscriptionData.set) {
@@ -115,32 +115,40 @@ export class SetManager {
                             added:  undefined,
                             set: _.cloneDeep(subscriptionData.set.list)
                         }
-                        newEventHandler(eventData);
+                        callback(eventData);
                     }
                 }
             } else {
                 const subsData: SetSubscriptionData = {
                     set: new CustomSet(),
-                    subscriptions: new Map().set(id, {subscriptionId: id, eventHandler: newEventHandler})
+                    subscriptions: new Map().set(id, {subscriptionId: id, callback: callback})
                 };
-                this.map.set(key, subsData);
+                this.map.set(subscriptionKey, subsData);
             }
         }
 
-        return { id, unsubscribeSet: () => this.unsubscribeSet(key, id) };
+        return { id, unsubscribeSet: () => this.unsubscribeSet(subscriptionKey, id) };
     }
 
-    static getSet(key: string): any[] | undefined {
-        const subsData = this.map.get(key);
+    static getSet(subscriptionKey: string): any[] | undefined {
+        const subsData = this.map.get(subscriptionKey);
         return subsData ? _.cloneDeep(subsData.set.list): undefined;
     }
 
-    static unsubscribeSet(key: string, id: string): boolean {
-        const subsData = this.map.get(key);
+    static unsubscribeSet(subscriptionKey: string, id: string): boolean {
+        const subsData = this.map.get(subscriptionKey);
         return subsData ? subsData.subscriptions.delete(id) : false;
     }
 
-    static clearSet(key: string) {
-        return this.map.delete(key);
+    static clearSet(subscriptionKey: string): boolean {
+        const subscriptionData = this.map.get(subscriptionKey);
+        subscriptionData?.subscriptions?.forEach((subsData: SetEventSubscription) => {
+            subsData.callback({
+                added: null,
+                removed: null,
+                set: null
+            })
+        });
+        return this.map.delete(subscriptionKey);
     }
 }
