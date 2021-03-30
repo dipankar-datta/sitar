@@ -3,9 +3,8 @@ import * as _ from'lodash';
 import { handleJsonParse, handleJsonStringify } from '../util/util';
 
 export interface SessionStorageData {
-    key: string,
-    current: any,
-    previous: any
+    subscriptionKey: string,
+    data: any
 }
 
 export type SessionStorageEventHandler = (data: SessionStorageData) => void;
@@ -24,39 +23,39 @@ export type SessionStorageSubscriptionData = {
     subscriptions: Map<string, SessionStorageEventSubscription>
 }
 
-export const setSessionStorage = (key: string, newData: any) => {
-    SessionStorageManager.setSessionStorage(key, newData);
+export const setSessionStorage = (subscriptionKey: string, newData: any) => {
+    SessionStorageManager.setSessionStorage(subscriptionKey, newData);
 }
 
-export const subscribeSessionStorage = (key: string, newEventHandler: SessionStorageEventHandler, triggerNow = false): SessionStorageSubscription => {
-    return SessionStorageManager.subscribeSessionStorage(key, newEventHandler, triggerNow);
+export const subscribeSessionStorage = (subscriptionKey: string, callback: SessionStorageEventHandler, triggerNow = false): SessionStorageSubscription => {
+    return SessionStorageManager.subscribeSessionStorage(subscriptionKey, callback, triggerNow);
 }
 
-export const getSessionStorageData = (key: string): any => {
-    return SessionStorageManager.getSessionStorageData(key);
+export const getSessionStorageData = (subscriptionKey: string): any => {
+    return SessionStorageManager.getSessionStorageData(subscriptionKey);
 }
 
-export const deleteSessionStorage = (key: string): boolean => {
-    return SessionStorageManager.deleteSessionStorage(key);
+export const deleteSessionStorage = (subscriptionKey: string): boolean => {
+    return SessionStorageManager.deleteSessionStorage(subscriptionKey);
 }
 
 class SessionStorageManager {
 
     private static map: Map<string, SessionStorageSubscriptionData> = new Map();
 
-    static setSessionStorage(key: string, newData: any) {
-        if (key) {
-            const subsData = this.map.get(key);
-            const newDataString = handleJsonStringify(newData);
+    static setSessionStorage(subscriptionKey: string, data: any) {
+        if (subscriptionKey) {
+            const subsData = this.map.get(subscriptionKey);
+            const newDataString = handleJsonStringify(data);
             let dataAdded: any;
-            const prevData = sessionStorage.getItem(key); 
+            const prevData = sessionStorage.getItem(subscriptionKey); 
             if (subsData) {                
                 if (!_.isEqual(prevData, newDataString)) {
-                    sessionStorage.setItem(key, newDataString ? newDataString : '');
-                    dataAdded = newData;
+                    sessionStorage.setItem(subscriptionKey, newDataString ? newDataString : '');
+                    dataAdded = data;
                 }
             } else {
-               this.map.set(key, {subscriptions: new Map()});
+               this.map.set(subscriptionKey, {subscriptions: new Map()});
             }        
             
             if (dataAdded) {
@@ -64,9 +63,8 @@ class SessionStorageManager {
                     if (eventSub) {
                         if (subsData) {
                             eventSub.eventHandler({
-                                key,
-                                current: handleJsonParse(newData),
-                                previous: prevData ? handleJsonParse(prevData) : null
+                                subscriptionKey: subscriptionKey,
+                                data: prevData ? handleJsonParse(prevData) : prevData
                             });
                         }
                     }
@@ -75,46 +73,48 @@ class SessionStorageManager {
         }
     }
 
-    static subscribeSessionStorage(key: string, newEventHandler: SessionStorageEventHandler, triggerNow = false): SessionStorageSubscription {
+    static subscribeSessionStorage(subscriptionKey: string, callback: SessionStorageEventHandler, triggerNow = false): SessionStorageSubscription {
         const id = uuid();
-        if (key && newEventHandler) {
-            const subscriptionData = this.map.get(key);
+        if (subscriptionKey && callback) {
+            const subscriptionData = this.map.get(subscriptionKey);
             if (subscriptionData) {
-                subscriptionData.subscriptions.set(id, { subscriptionId: id, eventHandler: newEventHandler });
+                subscriptionData.subscriptions.set(id, { subscriptionId: id, eventHandler: callback });
 
                 if (triggerNow) {
-                    const sessionData = sessionStorage.getItem(key);
-                    if (sessionData) {
-                        newEventHandler(_.cloneDeep(handleJsonParse(sessionData)));
-                    }
+                    const sessionData = sessionStorage.getItem(subscriptionKey);
+                    
+                    callback({
+                        subscriptionKey, 
+                        data: sessionData ? _.cloneDeep(handleJsonParse(sessionData)) : sessionData
+                    });
+                    
                 }
             } else {
                 const subsData: SessionStorageSubscriptionData = {                    
                     subscriptions: new Map()
                 };
-                subsData.subscriptions.set(id, {subscriptionId: id, eventHandler: newEventHandler});
-                this.map.set(key, subsData);
+                subsData.subscriptions.set(id, {subscriptionId: id, eventHandler: callback});
+                this.map.set(subscriptionKey, subsData);
             }
         }
 
-        return { id, unsubscribeSessionStorage: () => this.unsubscribeSessionStorage(key, id) };
+        return { id, unsubscribeSessionStorage: () => this.unsubscribeSessionStorage(subscriptionKey, id) };
     }
 
-    static deleteSessionStorage(storageKey: string): boolean {
-        const currentData = sessionStorage.getItem(storageKey);
-        sessionStorage.removeItem(storageKey);
-        const deleted = sessionStorage.getItem(storageKey) === null && currentData !== null;
+    static deleteSessionStorage(subscriptionKey: string): boolean {
+        const currentData = sessionStorage.getItem(subscriptionKey);
+        sessionStorage.removeItem(subscriptionKey);
+        const deleted = sessionStorage.getItem(subscriptionKey) === null && currentData !== null;
         
         if (deleted) {
-            const subscriptionData = this.map.get(storageKey);
+            const subscriptionData = this.map.get(subscriptionKey);
             subscriptionData?.subscriptions.forEach((value: SessionStorageEventSubscription, key: string) => {
                 value.eventHandler({
-                    current: null,
-                    previous: handleJsonParse(currentData),
-                    key
+                    subscriptionKey,
+                    data: null                    
                 });
             });
-            this.map.delete(storageKey);
+            this.map.delete(subscriptionKey);
         }
         
         return deleted;

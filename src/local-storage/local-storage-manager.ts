@@ -3,20 +3,19 @@ import * as _ from'lodash';
 import { handleJsonParse } from '../util/util';
 
 export interface LocalStorageData {
-    key: string,
-    current: any,
-    previous: any
+    subscriptionKey: string,
+    data: any
 }
 
 export type LocalStorageEventHandler = (data: LocalStorageData) => void;
 
 export interface LocalStorageEventSubscription {
     subscriptionId: string,
-    eventHandler: LocalStorageEventHandler
+    callback: LocalStorageEventHandler
 }
 
 export interface LocalStorageSubscription {
-    id: string;
+    subscriptionId: string;
     unsubscribeLocalStorage: () => void;
 }
 
@@ -24,49 +23,48 @@ export type LocalStorageSubscriptionData = {
     subscriptions: Map<string, LocalStorageEventSubscription>
 }
 
-export const setLocalStorage = (key: string, newData: any) => {
-    LocalStorageManager.setLocalStorage(key, newData);
+export const setLocalStorage = (subscriptionKey: string, data: any) => {
+    LocalStorageManager.setLocalStorage(subscriptionKey, data);
 }
 
-export const subscribeLocalStorage = (key: string, newEventHandler: LocalStorageEventHandler, triggerNow = false): LocalStorageSubscription => {
-    return LocalStorageManager.subscribeLocalStorage(key, newEventHandler, triggerNow);
+export const subscribeLocalStorage = (subscriptionKey: string, callback: LocalStorageEventHandler, triggerNow = false): LocalStorageSubscription => {
+    return LocalStorageManager.subscribeLocalStorage(subscriptionKey, callback, triggerNow);
 }
 
-export const getLocalStorageData = (key: string): any => {
-    return LocalStorageManager.getLocalStorageData(key);
+export const getLocalStorageData = (subscriptionKey: string): any => {
+    return LocalStorageManager.getLocalStorageData(subscriptionKey);
 }
 
-export const deleteLocalStorage = (key: string): boolean => {
-    return LocalStorageManager.deleteLocalStorage(key);
+export const deleteLocalStorage = (subscriptionKey: string): boolean => {
+    return LocalStorageManager.deleteLocalStorage(subscriptionKey);
 }
 
 class LocalStorageManager {
 
     private static map: Map<string, LocalStorageSubscriptionData> = new Map();
 
-    static setLocalStorage(key: string, newData: any) {
-        if (key) {
-            const subsData = this.map.get(key);
-            const newDataString = newData ? ((typeof newData === 'string') ? newData : JSON.stringify(newData)) : undefined;
+    static setLocalStorage(subscriptionKey: string, data: any) {
+        if (subscriptionKey) {
+            const subsData = this.map.get(subscriptionKey);
+            const newDataString = data ? ((typeof data === 'string') ? data : JSON.stringify(data)) : undefined;
             let dataAdded: any;
-            const prevData = localStorage.getItem(key); 
+            const prevData = localStorage.getItem(subscriptionKey); 
             if (subsData) {                
                 if (!_.isEqual(prevData, newDataString)) {
-                    localStorage.setItem(key, newDataString ? newDataString : '');
-                    dataAdded = newData;
+                    localStorage.setItem(subscriptionKey, newDataString ? newDataString : '');
+                    dataAdded = data;
                 }
             } else {
-               this.map.set(key, {subscriptions: new Map()});
+               this.map.set(subscriptionKey, {subscriptions: new Map()});
             }        
             
             if (dataAdded) {
                 subsData?.subscriptions.forEach((eventSub: LocalStorageEventSubscription) => {
                     if (eventSub) {
                         if (subsData) {
-                            eventSub.eventHandler({
-                                key,
-                                current: handleJsonParse(newData),
-                                previous: prevData ? handleJsonParse(prevData) : null
+                            eventSub.callback({
+                                subscriptionKey,
+                                data: handleJsonParse(data)
                             });
                         }
                     }
@@ -75,58 +73,58 @@ class LocalStorageManager {
         }
     }
 
-    static subscribeLocalStorage(key: string, newEventHandler: LocalStorageEventHandler, triggerNow = false): LocalStorageSubscription {
+    static subscribeLocalStorage(subscriptionKey: string, callback: LocalStorageEventHandler, triggerNow = false): LocalStorageSubscription {
         const id = uuid();
-        if (key && newEventHandler) {
-            const subscriptionData = this.map.get(key);
+        if (subscriptionKey && callback) {
+            const subscriptionData = this.map.get(subscriptionKey);
             if (subscriptionData) {
-                subscriptionData.subscriptions.set(id, { subscriptionId: id, eventHandler: newEventHandler });
+                subscriptionData.subscriptions.set(id, { subscriptionId: id, callback });
 
                 if (triggerNow) {
-                    const localData = localStorage.getItem(key);
-                    if (localData) {
-                        newEventHandler(_.cloneDeep(handleJsonParse(localData)));
-                    }
+                    const localData = localStorage.getItem(subscriptionKey);                   
+                    callback({ 
+                        subscriptionKey: subscriptionKey, 
+                        data: localData ? _.cloneDeep(handleJsonParse(localData)) : null
+                    });                    
                 }
             } else {
                 const subsData: LocalStorageSubscriptionData = {                    
                     subscriptions: new Map()
                 };
-                subsData.subscriptions.set(id, {subscriptionId: id, eventHandler: newEventHandler});
-                this.map.set(key, subsData);
+                subsData.subscriptions.set(id, {subscriptionId: id, callback});
+                this.map.set(subscriptionKey, subsData);
             }
         }
 
-        return { id, unsubscribeLocalStorage: () => this.unsubscribeLocalStorage(key, id) };
+        return { subscriptionId: id, unsubscribeLocalStorage: () => this.unsubscribeLocalStorage(subscriptionKey, id) };
     }
 
-    static deleteLocalStorage(storageKey: string): boolean {
-        const data = localStorage.getItem(storageKey);
-        localStorage.removeItem(storageKey);
-        const deleted = localStorage.getItem(storageKey) === null && data !== null;
+    static deleteLocalStorage(subscriptionKey: string): boolean {
+        const data = localStorage.getItem(subscriptionKey);
+        localStorage.removeItem(subscriptionKey);
+        const deleted = localStorage.getItem(subscriptionKey) === null && data !== null;
         
         if (deleted) {
-            const subscriptionData = this.map.get(storageKey);
+            const subscriptionData = this.map.get(subscriptionKey);
             subscriptionData?.subscriptions.forEach((value: LocalStorageEventSubscription, key: string) => {
-                value.eventHandler({
-                    current: null,
-                    previous: handleJsonParse(data),
-                    key
+                value.callback({
+                    subscriptionKey: key,
+                    data: null                    
                 });
             });
-            this.map.delete(storageKey);
+            this.map.delete(subscriptionKey);
         }
         
         return deleted;
     }
 
-    static getLocalStorageData(key: string): any {
-        const localData = localStorage.getItem(key);
+    static getLocalStorageData(subscriptionKey: string): any {
+        const localData = localStorage.getItem(subscriptionKey);
         return localData ?  handleJsonParse(localData) : null;
     }
 
-    static unsubscribeLocalStorage(key: string, id: string): boolean {
-        const subsData = this.map.get(key);
+    static unsubscribeLocalStorage(subscriptionKey: string, id: string): boolean {
+        const subsData = this.map.get(subscriptionKey);
         return subsData ? subsData.subscriptions.delete(id) : false;
     }
 

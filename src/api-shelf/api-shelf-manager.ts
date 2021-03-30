@@ -18,20 +18,20 @@ export interface ApiShelfSubscription {
     unsubscribeApiShelf: () => void;
 }
 
-export const setApiShelf = async (key: string, url: string, headers?: { [key: string]: string })  => {
-    ApiStoreManager.setApiShelf(key, url, headers);
+export const setApiShelf = async (subscriptionKey: string, url: string, headers?: { [key: string]: string })  => {
+    ApiStoreManager.setApiShelf(subscriptionKey, url, headers);
 }
 
-export const subscribeApiShelf = (key: string, callback: ShelfEventHandler, triggerNow = false): ApiShelfSubscription => {
-    return ApiStoreManager.subscribeApiShelf(key, callback, triggerNow);
+export const subscribeApiShelf = (subscriptionKey: string, callback: ShelfEventHandler, triggerNow = false): ApiShelfSubscription => {
+    return ApiStoreManager.subscribeApiShelf(subscriptionKey, callback, triggerNow);
 }
 
 export default class ApiStoreManager {
 
     private static apiShelf: Map<string, ApiSubscriptionData> = new Map();
 
-    static setApiShelf(key: string, url: string, headers?: { [key: string]: string }) {        
-        this.loadApiData(key, url, headers);
+    static setApiShelf(subscriptionKey: string, url: string, headers?: { [key: string]: string }) {        
+        this.loadApiData(subscriptionKey, url, headers);
     }
 
     private static loadApiData(storageKey: string, url: string, headers?: { [Objkey: string]: string }) {
@@ -74,10 +74,10 @@ export default class ApiStoreManager {
         }
     }
 
-    static subscribeApiShelf(key: string, callback: ShelfEventHandler, triggerNow = false): ApiShelfSubscription {
+    static subscribeApiShelf(subscriptionKey: string, callback: ShelfEventHandler, triggerNow = false): ApiShelfSubscription {
         const id = uuid();
-        if (key && callback) {
-            const subscriptionData = this.apiShelf.get(key);
+        if (subscriptionKey && callback) {
+            const subscriptionData = this.apiShelf.get(subscriptionKey);
             if (subscriptionData) {
                 subscriptionData.subscriptions.set(id, { subscriptionId: id, callback });
 
@@ -88,25 +88,25 @@ export default class ApiStoreManager {
                 }
             } else {
                 const subsData: ApiSubscriptionData = {
-                    data: {current: null, previous: null, key},
+                    data: {current: null, previous: null, key: subscriptionKey},
                     url: '',
                     headers: {},
                     subscriptions: new Map().set(id, {subscriptionId: id, callback})
                 }
-                this.apiShelf.set(key, subsData);
+                this.apiShelf.set(subscriptionKey, subsData);
             }
         }
 
-        return { id, unsubscribeApiShelf: () => this.unsubscribeApiShelf(key, id) };
+        return { id, unsubscribeApiShelf: () => this.unsubscribeApiShelf(subscriptionKey, id) };
     }
 
-    static getApiShelfData(key: string): any {
-        const subsData = this.apiShelf.get(key);
+    static getApiShelfData(subscriptionKey: string): any {
+        const subsData = this.apiShelf.get(subscriptionKey);
         return subsData ? _.cloneDeep(subsData.data) : null;
     }
 
-    static unsubscribeApiShelf(key: string, id: string): boolean {
-        const subsData = this.apiShelf.get(key);
+    static unsubscribeApiShelf(subscriptionKey: string, id: string): boolean {
+        const subsData = this.apiShelf.get(subscriptionKey);
         return subsData ? subsData.subscriptions.delete(id) : false;
     }
 }

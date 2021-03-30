@@ -5,7 +5,7 @@ export type InvokerEventHandler = (data: any) => void;
 
 export interface InvokerEventSubscription {
     subscriptionId: string,
-    eventHandler: InvokerEventHandler
+    callback: InvokerEventHandler
 }
 
 export interface InvokerSubscription {
@@ -17,47 +17,47 @@ export type InvokerSubscriptionData = {
     subscriptions: Map<string, InvokerEventSubscription>
 }
 
-export const invoke = (key: string, newData?: any) => {
-    Invoker.invoke(key, newData);
+export const invoke = (subscriptionKey: string, data?: any) => {
+    Invoker.invoke(subscriptionKey, data);
 }
 
-export const subscribeInvoker = (key: string, newEventHandler: InvokerEventHandler): InvokerSubscription => {
-    return Invoker.subscribeInvoker(key, newEventHandler);
+export const subscribeInvoker = (subscriptionKey: string, callback: InvokerEventHandler): InvokerSubscription => {
+    return Invoker.subscribeInvoker(subscriptionKey, callback);
 }
 
 class Invoker {
 
     private static map: Map<string, InvokerSubscriptionData> = new Map();
 
-    static invoke(key: string, newData?: any) {
-        if (key) {
-            const subsData = this.map.get(key);
+    static invoke(subscriptionKey: string, data?: any) {
+        if (subscriptionKey) {
+            const subsData = this.map.get(subscriptionKey);
             subsData?.subscriptions.forEach((eventSub: InvokerEventSubscription) => {               
-                eventSub?.eventHandler(newData);               
+                eventSub.callback(data);               
             });
         }
     }
 
-    static subscribeInvoker(key: string, newEventHandler: InvokerEventHandler): InvokerSubscription {
+    static subscribeInvoker(subscriptionKey: string, callback: InvokerEventHandler): InvokerSubscription {
         const id = uuid();
-        if (key && newEventHandler) {
-            const subscriptionData = this.map.get(key);
+        if (subscriptionKey && callback) {
+            const subscriptionData = this.map.get(subscriptionKey);
             if (subscriptionData) {
-                subscriptionData.subscriptions.set(id, { subscriptionId: id, eventHandler: newEventHandler });
+                subscriptionData.subscriptions.set(id, { subscriptionId: id, callback });
             } else {
                 const subsData: InvokerSubscriptionData = {                    
                     subscriptions: new Map()
                 };
-                subsData.subscriptions.set(id, {subscriptionId: id, eventHandler: newEventHandler});
-                this.map.set(key, subsData);
+                subsData.subscriptions.set(id, {subscriptionId: id, callback});
+                this.map.set(subscriptionKey, subsData);
             }
         }
 
-        return { id, unsubscribeInvoker: () => this.unsubscribeInvoker(key, id) };
+        return { id, unsubscribeInvoker: () => this.unsubscribeInvoker(subscriptionKey, id) };
     }
 
-    static unsubscribeInvoker(key: string, id: string): boolean {
-        const subsData = this.map.get(key);
+    static unsubscribeInvoker(subscriptionKey: string, id: string): boolean {
+        const subsData = this.map.get(subscriptionKey);
         return subsData ? subsData.subscriptions.delete(id) : false;
     }
 }

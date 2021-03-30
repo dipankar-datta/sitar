@@ -24,38 +24,38 @@ export type ShelfSubscriptionData = {
     subscriptions: Map<string, ShelfEventSubscription>
 }
 
-export const setShelf = (key: string, newData: any) => {
-    ShelfManager.setShelf(key, newData);
+export const setShelf = (subscriptionKey: string, data: any) => {
+    ShelfManager.setShelf(subscriptionKey, data);
 }
 
-export const subscribeShelf = (key: string, callback: ShelfEventHandler, triggerNow = false): ShelfSubscription => {
-    return ShelfManager.subscribeShelf(key, callback, triggerNow);
+export const subscribeShelf = (subscriptionKey: string, callback: ShelfEventHandler, triggerNow = false): ShelfSubscription => {
+    return ShelfManager.subscribeShelf(subscriptionKey, callback, triggerNow);
 }
 
-export const getShelfData = (key: string): any => {
-    return ShelfManager.getShelfData(key);
+export const getShelfData = (subscriptionKey: string): any => {
+    return ShelfManager.getShelfData(subscriptionKey);
 }
 
 class ShelfManager {
 
     private static shelf: Map<string, ShelfSubscriptionData> = new Map();
 
-    static setShelf(key: string, newData: any) {
-        if (key) {
-            let shelf = this.shelf.get(key);
-            const newDataClone = _.cloneDeep(newData);
+    static setShelf(subscriptionKey: string, data: any) {
+        if (subscriptionKey) {
+            let shelf = this.shelf.get(subscriptionKey);
+            const newDataClone = _.cloneDeep(data);
             if (shelf) {
                 shelf.data.previous = _.cloneDeep(shelf.data.current);
                 shelf.data.current = newDataClone;
             } else {
                 shelf = {
                     data: {
-                        key, current: newDataClone,
+                        key: subscriptionKey, current: newDataClone,
                         previous: null
                     },
                     subscriptions: new Map()
                 };
-                this.shelf.set(key, shelf);
+                this.shelf.set(subscriptionKey, shelf);
             }            
 
             shelf.subscriptions.forEach((eventSub: ShelfEventSubscription) => {
@@ -68,10 +68,10 @@ class ShelfManager {
         }
     }
 
-    static subscribeShelf(key: string, callback: ShelfEventHandler, triggerNow = false): ShelfSubscription {
+    static subscribeShelf(subscriptionKey: string, callback: ShelfEventHandler, triggerNow = false): ShelfSubscription {
         const id = uuid();
-        if (key && callback) {
-            const subscriptionData = this.shelf.get(key);
+        if (subscriptionKey && callback) {
+            const subscriptionData = this.shelf.get(subscriptionKey);
             if (subscriptionData) {
                 subscriptionData.subscriptions.set(id, { subscriptionId: id, callback});
 
@@ -83,26 +83,26 @@ class ShelfManager {
             } else {
                 const subsData: ShelfSubscriptionData = {
                     data: {
-                        key, current: null,
+                        key: subscriptionKey, current: null,
                         previous: null
                     },
                     subscriptions: new Map()
                 };
                 subsData.subscriptions.set(id, {subscriptionId: id, callback});
-                this.shelf.set(key, subsData);
+                this.shelf.set(subscriptionKey, subsData);
             }
         }
 
-        return { id, unsubscribeShelf: () => this.unsubscribeShelf(key, id) };
+        return { id, unsubscribeShelf: () => this.unsubscribeShelf(subscriptionKey, id) };
     }
 
-    static getShelfData(key: string): any {
-        const subsData = this.shelf.get(key);
+    static getShelfData(subscriptionKey: string): any {
+        const subsData = this.shelf.get(subscriptionKey);
         return subsData ?  _.cloneDeep(subsData.data) : null;
     }
 
-    static unsubscribeShelf(key: string, id: string): boolean {
-        const subsData = this.shelf.get(key);
-        return subsData ? subsData.subscriptions.delete(id) : false;
+    static unsubscribeShelf(subscriptionKey: string, subscriptionId: string): boolean {
+        const subsData = this.shelf.get(subscriptionKey);
+        return subsData ? subsData.subscriptions.delete(subscriptionId) : false;
     }
 }
