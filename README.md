@@ -597,7 +597,7 @@ invoke('DEMO_INVOKER_KEY', {"score": "4/5"});
 
 ```
 
-### **7.1 subscribeInvoker(subscriptionKey: string, callback: InvokerEventHandler): InvokerSubscription**
+### **7.2 subscribeInvoker(subscriptionKey: string, callback: InvokerEventHandler): InvokerSubscription**
 subscribeInvoker allows us to subscribe for event triggers by invoke. Whenever invoke triggers an event, all the subscriptions will be invoked by their callbacks.
 
 #### **Params**
