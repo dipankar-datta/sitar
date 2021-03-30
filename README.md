@@ -554,7 +554,7 @@ const subscription = subscribeSessionStorage('DEMO_SESSION_STORAGE_KEY', (callBa
 subscription.unsubscribeSessionStorage(); // Should be called when subscription is no longer required or scope of this code is going to be cleared.
 ```
 
-### **5.4 deleteSessionStorage(subscriptionKey: string): boolean**
+### **6.4 deleteSessionStorage(subscriptionKey: string): boolean**
 deleteSessionStorage let's us delete the session storage entry created by Sitar. Upon deleting the session storage data it triggers all the subscription callbacks with null data.
 
 
