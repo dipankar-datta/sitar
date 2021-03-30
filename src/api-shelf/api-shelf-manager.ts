@@ -22,6 +22,11 @@ export const setApiShelf = async (subscriptionKey: string, url: string, headers?
     ApiStoreManager.setApiShelf(subscriptionKey, url, headers);
 }
 
+export const getApiShelfData = (subscriptionKey: string): any  => {
+    return ApiStoreManager.getApiShelfData(subscriptionKey);
+}
+
+
 export const subscribeApiShelf = (subscriptionKey: string, callback: ShelfEventHandler, triggerNow = false): ApiShelfSubscription => {
     return ApiStoreManager.subscribeApiShelf(subscriptionKey, callback, triggerNow);
 }

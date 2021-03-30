@@ -28,6 +28,10 @@ On storing or updating the data, Shelf triggers events which intern triggers fun
 <br>
 Currently following are the provided functions by Shelf.
 
+>**setShelf**<br>
+>**subscribeShelf**<br>
+>**getShelfData**<br>
+
 ### **1.1 setShelf(subscriptionKey: string, data: any)**
 setShelf stores the data into browser memory. Please note that on reloading or refreshing the browser this data gets erased. Once this function is called, all the subscriptions for the specified key will be triggered. setShelf function takes two parameters.
 #### **Params**
@@ -91,9 +95,12 @@ console.log('Subscribed key', latestData.key);
 API Shelf fetches data from an API and then stores the data in browser's memory. 
 This data can be accessed across the application inside the browser window.
 Different parts of the application can subscribe to this data.
-Once the API successfully fetches data, API Shelf triggers events which intern triggers functions provided by it's subscriptions.
-<br>
-<br>
+Once the API successfully fetches data, API Shelf triggers events which intern triggers functions provided by it's subscriptions.<br>
+
+>**setApiShelf**<br>
+>**subscribeApiShelf**<br>
+>**getApiShelfData**<br>
+
 Currently following are the provided functions by API Shelf.
 
 ### **2.1 setApiShelf(subscriptionKey: string, url: string, headers?: { [key: string]: string })**
@@ -119,9 +126,16 @@ setApiShelf('DEMO_API_SHELF_KEY', 'https://mydomain.com/path/resource', headers)
 apiShelfSubscription.unsubscribeApiShelf(); // Should be called when subscription is no longer required or scope of this code is going to be cleared.
 ```
 
+### **2.2 getApiShelfData(subscriptionKey: string): any**
+getApiShelfData returns the latest version of the data that has been fetched from the API.
 
+#### **Params**
+>**subscriptionKey:** Name or unique identifier of the API data. This can be any string name. This should be unique for the kind of of API data we store. This is a mandatory field <br>
 
-### **2.2 subscribeApiShelf(subscriptionKey: string, callback: ShelfEventHandler, triggerNow ?: boolean): ApiShelfSubscription**
+#### **Returns**
+>**any:** getApiShelfData returns the latest data that has been stored from the API agains the subscription key.
+
+### **2.3 subscribeApiShelf(subscriptionKey: string, callback: ShelfEventHandler, triggerNow ?: boolean): ApiShelfSubscription**
 subscribeApiShelf subscribes to the data we receive from the API using setApiShelf. On recieving response data successfully it stores 
 the data into browser memory and then it goes through all the subscriptions and calls all the callback functions with the API response data.
 
