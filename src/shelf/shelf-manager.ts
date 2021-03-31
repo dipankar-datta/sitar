@@ -56,13 +56,11 @@ class ShelfManager {
                     subscriptions: new Map()
                 };
                 this.shelf.set(subscriptionKey, shelf);
-            }            
+            }  
 
             shelf.subscriptions.forEach((eventSub: ShelfEventSubscription) => {
-                if (eventSub) {
-                    if (shelf) {
-                        eventSub.callback(shelf.data);
-                    }
+                if (shelf) {
+                    eventSub.callback(shelf.data);
                 }
             });
         }
@@ -91,6 +89,8 @@ class ShelfManager {
                 subsData.subscriptions.set(id, {subscriptionId: id, callback});
                 this.shelf.set(subscriptionKey, subsData);
             }
+        } else {
+            throw new Error("Invalid subscription key or callback");
         }
 
         return { id, unsubscribeShelf: () => this.unsubscribeShelf(subscriptionKey, id) };

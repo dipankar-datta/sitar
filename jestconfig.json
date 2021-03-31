@@ -5,5 +5,7 @@
   "testRegex": "(/tests/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
   "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
   "coverageDirectory": "./coverage/",
-  "collectCoverage": true
+  "collectCoverage": true,
+  "coveragePathIgnorePatterns": ["/demo/"],
+  "modulePathIgnorePatterns": ["/demo/"]
 }
