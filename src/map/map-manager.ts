@@ -2,9 +2,9 @@ import { v4 as uuid } from 'uuid';
 import * as _ from'lodash';
 
 export interface MapData {
-    key?: string,
-    current?: any,
-    previous?: any,
+    key: string | null,
+    current: any | null,
+    previous: any | null,
     map: Map<any, any> | null
 }
 
@@ -89,7 +89,6 @@ class MapManager {
         if (subscriptionKey && newData) {
             let subData = this.map.get(subscriptionKey);
             const newDataClone = _.cloneDeep(newData);
-            let prevData: any;
             if (subData) {
                 Object.entries(newDataClone).forEach((item: any) => {
                     subData?.map.set(item[0], item[1]);
@@ -103,17 +102,13 @@ class MapManager {
             }
 
             subData.subscriptions.forEach((eventSub: MapEventSubscription) => {
-                if (eventSub) {
-                    if (subData) {
-                        const eventData: MapData = {
-                            key: '',
-                            current: null,
-                            previous:  null,
-                            map: _.cloneDeep(subData.map)
-                        }
-                        eventSub.callback(eventData);
-                    }
+                const eventData: MapData = {
+                    key: null,
+                    current: null,
+                    previous:  null,
+                    map: subData ? _.cloneDeep(subData.map) : null
                 }
+                eventSub.callback(eventData);
             });
         }
     }
@@ -128,9 +123,9 @@ class MapManager {
                 if (triggerNow) {
                     if (subscriptionData.map) {
                         const eventData: MapData = {
-                            key: undefined,
-                            current: undefined,
-                            previous:  undefined,
+                            key: null,
+                            current: null,
+                            previous:  null,
                             map: _.cloneDeep(subscriptionData.map)
                         }
                         callback(eventData);
@@ -165,15 +160,13 @@ class MapManager {
         const deleted = subsData?.map.delete(entryKey);    
         if (deleted) {
             subsData?.subscriptions.forEach((eventSub: MapEventSubscription) => {
-                if (eventSub) {
-                        const eventData: MapData = {
-                            key: entryKey,
-                            current: null,
-                            previous:  prevData,
-                            map: _.cloneDeep(subsData.map)
-                        };
-                        eventSub.callback(eventData);
-                    }
+                    const eventData: MapData = {
+                        key: entryKey,
+                        current: null,
+                        previous:  prevData,
+                        map: _.cloneDeep(subsData.map)
+                    };
+                    eventSub.callback(eventData);
                 }
             );
         }
@@ -187,7 +180,7 @@ class MapManager {
 
         subsData?.subscriptions?.forEach((subsData: MapEventSubscription) => {
             const eventData: MapData = {
-                key: subscriptionKey,
+                key: null as any,
                 current: null,
                 previous:  null,
                 map: null
