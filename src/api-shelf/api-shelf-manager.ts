@@ -79,7 +79,7 @@ export default class ApiShelfManager {
                         });
                 }).catch(err => {
                     throw new Error('Unsuccessful API call.');
-                });;
+                });
         } else {
             throw new Error("Invalid subscription key or url.");
         }
