@@ -100,6 +100,8 @@ Once the API successfully fetches data, API Shelf triggers events which intern t
 >**setApiShelf**<br>
 >**subscribeApiShelf**<br>
 >**getApiShelfData**<br>
+>**clearApiShelfData**<br>
+
 
 Currently following are the provided functions by API Shelf.
 
@@ -150,7 +152,7 @@ subscribeApiShelf function takes two mandatory parameters and one optional param
 >**triggerNow:** This is an optional boolean field. On passing this field as true, the provided eventHanler function will be triggered immediately with current data. This is helpful when it is understood that the target object or data is already available in the memory and it can be accessed immediately along with subscribing it. <br>
 
 #### **Returns**
-subscribeApiShelf returns ApiShelfSubscription object which contains subscription id and unsubscribeApiShelf() function. unsubscribeApiShelf() function helps unsubscribing the subscription. When we need to unsubscribe the APiShelf, then we can call unsubscribeApiShelf function we recieved in the ApiShelfSubscription object while subscribing the APIShelf.
+>**ApiShelfSubscription:** subscribeApiShelf returns ApiShelfSubscription object which contains subscription id and unsubscribeApiShelf() function. unsubscribeApiShelf() function helps unsubscribing the subscription. When we need to unsubscribe the APiShelf, then we can call unsubscribeApiShelf function we recieved in the ApiShelfSubscription object while subscribing the APIShelf.
 
 
 #### **Example**
@@ -164,6 +166,24 @@ const apiShelfSubscription = subscribeApiShelf('DEMO_SHELF_KEY', (data: ShelfDat
 }, true);
 
 apiShelfSubscription.unsubscribeApiShelf(); // Should be called when subscription is no longer required or scope of this code is going to be cleared.
+```
+
+### **2.4 clearApiShelfData(subscriptionKey: string): boolean**
+clearApiShelfData completely removes all the subscriptions and all current as well as previous data from the memory. With this there will no previous history of for this subscriptionKey.
+
+#### **Params**
+>**subscriptionKey:** Name or unique identifier of the API data. This can be any string name. This should be unique for the kind of of API data we store. This is a mandatory field <br>
+
+#### **Returns**
+>**boolean:** clearApiShelfData returns boolean true if the API data and its subscriptions are successfully removed from memory. Returns false otherwise. 
+
+#### **Example**
+```
+import {subscribeApiShelf} from 'sitar';
+
+const deleted = clearApiShelfData('DEMO_SHELF_KEY');
+
+console.log('Successfully deleted: ', deleted);
 ```
 
 ## 3. Map

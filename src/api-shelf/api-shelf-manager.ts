@@ -19,34 +19,38 @@ export interface ApiShelfSubscription {
 }
 
 export const setApiShelf = async (subscriptionKey: string, url: string, headers?: { [key: string]: string })  => {
-    ApiStoreManager.setApiShelf(subscriptionKey, url, headers);
+    await ApiShelfManager.setApiShelf(subscriptionKey, url, headers);
 }
 
-export const getApiShelfData = (subscriptionKey: string): any  => {
-    return ApiStoreManager.getApiShelfData(subscriptionKey);
+export const getApiShelfData = (subscriptionKey: string): ShelfData | null => {
+    return ApiShelfManager.getApiShelfData(subscriptionKey);
 }
 
 
 export const subscribeApiShelf = (subscriptionKey: string, callback: ShelfEventHandler, triggerNow = false): ApiShelfSubscription => {
-    return ApiStoreManager.subscribeApiShelf(subscriptionKey, callback, triggerNow);
+    return ApiShelfManager.subscribeApiShelf(subscriptionKey, callback, triggerNow);
 }
 
-export default class ApiStoreManager {
+export const clearApiShelfData = (subscriptionKey: string) : boolean => {
+    return ApiShelfManager.clearApiShelfData(subscriptionKey);
+}
+
+export default class ApiShelfManager {
 
     private static apiShelf: Map<string, ApiSubscriptionData> = new Map();
 
-    static setApiShelf(subscriptionKey: string, url: string, headers?: { [key: string]: string }) {        
-        this.loadApiData(subscriptionKey, url, headers);
+    static async setApiShelf(subscriptionKey: string, url: string, headers?: { [key: string]: string }) {        
+        await this.loadApiData(subscriptionKey, url, headers);
     }
 
-    private static loadApiData(storageKey: string, url: string, headers?: { [Objkey: string]: string }) {
-        if (storageKey && url) {
-            fetch(url, { method: 'GET', headers })
+    private static async loadApiData(subscriptionKey: string, url: string, headers?: { [Objkey: string]: string }) {
+        if (subscriptionKey && url) {
+            await fetch(url, { method: 'GET', headers })
                 .then((response: Response) => {
                     response
                         .json()
                         .then((data: any) => {
-                            let shelf = this.apiShelf.get(storageKey);
+                            let shelf = this.apiShelf.get(subscriptionKey);
                             if (shelf) {
                                 shelf.data.previous = _.cloneDeep(shelf.data.current);
                                 shelf.data.current = data;
@@ -56,7 +60,7 @@ export default class ApiStoreManager {
                             } else {
                                 shelf = {
                                     data: {
-                                        key: storageKey, 
+                                        key: subscriptionKey, 
                                         current: data,
                                         previous: null
                                     },
@@ -64,18 +68,20 @@ export default class ApiStoreManager {
                                     url,
                                     subscriptions: new Map()
                                 };
-                                this.apiShelf.set(storageKey, shelf);
+                                this.apiShelf.set(subscriptionKey, shelf);
                             }
 
-                            shelf.subscriptions.forEach((eventSub: ShelfEventSubscription, key: string) => {
-                                if (eventSub) {
-                                    if (shelf) {
-                                        eventSub.callback(shelf.data);
-                                    }
+                            shelf.subscriptions.forEach((eventSub: ShelfEventSubscription, key: string) => {                               
+                                if (shelf) {
+                                    eventSub.callback(shelf.data);
                                 }
                             });
                         });
-                });
+                }).catch(err => {
+                    throw new Error('Unsuccessful API call.');
+                });;
+        } else {
+            throw new Error("Invalid subscription key or url.");
         }
     }
 
@@ -100,12 +106,14 @@ export default class ApiStoreManager {
                 }
                 this.apiShelf.set(subscriptionKey, subsData);
             }
+        } else {
+            throw new Error("Invalid subscription key or callback.");
         }
 
         return { id, unsubscribeApiShelf: () => this.unsubscribeApiShelf(subscriptionKey, id) };
     }
 
-    static getApiShelfData(subscriptionKey: string): any {
+    static getApiShelfData(subscriptionKey: string): ShelfData | null {
         const subsData = this.apiShelf.get(subscriptionKey);
         return subsData ? _.cloneDeep(subsData.data) : null;
     }
@@ -113,5 +121,10 @@ export default class ApiStoreManager {
     static unsubscribeApiShelf(subscriptionKey: string, id: string): boolean {
         const subsData = this.apiShelf.get(subscriptionKey);
         return subsData ? subsData.subscriptions.delete(id) : false;
+    }
+
+    static clearApiShelfData(subscriptionKey: string): boolean {
+        const subsData = this.apiShelf.get(subscriptionKey);
+        return subsData ? this.apiShelf.delete(subscriptionKey) : false;
     }
 }

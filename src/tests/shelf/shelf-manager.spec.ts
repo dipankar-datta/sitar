@@ -1,4 +1,4 @@
-import {setShelf, getShelfData, subscribeShelf, ShelfData} from "../shelf/shelf-manager";
+import {setShelf, getShelfData, subscribeShelf, ShelfData} from "../../shelf/shelf-manager";
 
 describe("Test Shelf", () => {
     test('Should set data in Shelf', () => {
