@@ -1,4 +1,3 @@
-import { map } from "lodash";
 import {clearMap, deleteMapEntry, getMap, loadMap, MapData, setMap, subscribeMap} from "../../map/map-manager";
 
 describe("Test MAP", () => {
@@ -143,9 +142,7 @@ describe("Test MAP", () => {
     });
 
     test("Test subscription before map set", done => {
-        const testMapKey = 'TEST_MAP_KEY_7';     
-        
-        
+        const testMapKey = 'TEST_MAP_KEY_7';    
 
         const sub = subscribeMap(testMapKey, (mapData: MapData) => {
             expect(mapData).not.toBeNull();
@@ -170,11 +167,8 @@ describe("Test MAP", () => {
     });
 
     test("Test map load after map set", done => {
-        const testMapKey = 'TEST_MAP_KEY_8';     
-        
-        setMap(testMapKey, 'zeta', 70);
-        
-
+        const testMapKey = 'TEST_MAP_KEY_8';             
+        setMap(testMapKey, 'zeta', 70);        
         const sub = subscribeMap(testMapKey, (mapData: MapData) => {
             expect(mapData).not.toBeNull();
             expect(mapData.current).toBeNull();

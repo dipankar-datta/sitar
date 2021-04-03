@@ -65,15 +65,13 @@ export class SetManager {
 
             if (dataAdded.length > 0) {
                 subData.subscriptions.forEach((eventSub: SetEventSubscription) => {
-                    if (eventSub) {
-                        if (subData) {
-                            const eventData: SetData = {
-                                removed: null,
-                                added:  dataAdded,
-                                set: _.cloneDeep(subData.set.list)
-                            }
-                            eventSub.callback(eventData);
+                    if (subData) {
+                        const eventData: SetData = {
+                            removed: null,
+                            added:  dataAdded,
+                            set: _.cloneDeep(subData.set.list)
                         }
+                        eventSub.callback(eventData);
                     }
                 });
             }            
@@ -86,22 +84,20 @@ export class SetManager {
             const toDelete = subsData.set.remove(delData);
             if (toDelete.length > 0) {
                 subsData.subscriptions.forEach((eventSub: SetEventSubscription) => {
-                    if (eventSub) {
-                        if (subsData) {
-                            const eventData: SetData = {
-                                removed: Array.isArray(toDelete) ? toDelete : [toDelete],
-                                added:  null,
-                                set: _.cloneDeep(subsData.set.list)
-                            }
-                            eventSub.callback(eventData);
+                    if (subsData) {
+                        const eventData: SetData = {
+                            removed: toDelete,
+                            added:  null,
+                            set: _.cloneDeep(subsData.set.list)
                         }
+                        eventSub.callback(eventData);
                     }
                 });
             }
         }
     }
 
-    static subscribeSet(subscriptionKey: string, callback: SetEventHandler, triggerNow = false): SetSubscription {
+    static subscribeSet(subscriptionKey: string, callback: SetEventHandler, triggerNow?: boolean): SetSubscription {
         const id = uuid();
         if (subscriptionKey && callback) {
             const subscriptionData = this.map.get(subscriptionKey);
