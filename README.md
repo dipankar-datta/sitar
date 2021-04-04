@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Sitar is a JavaScript library build using TypeScript and is compatible with both JavaScript and TypeScript.
+Sitar is a JavaScript library built using TypeScript and is compatible with both JavaScript and TypeScript.
 
 Sitar attemps to simplify browser side storage management using events.
 
