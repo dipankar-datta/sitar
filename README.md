@@ -30,6 +30,7 @@ Currently following are the provided functions by Shelf.
 
 >**setShelf**<br>
 >**subscribeShelf**<br>
+>**subscribeShelfFilter**<br>
 >**getShelfData**<br>
 
 ### **1.1 setShelf(subscriptionKey: string, data: any)**
@@ -58,7 +59,7 @@ subscribeShelf subscribes changes for any object against a specific subscription
 >**triggerNow:** This is an optional boolean field. On passing this field as true, the provided eventHanler function will be triggered immediately with current data. This is helpful when it is understood that the target object or data is already available in the memory and it can be accessed immediately along with subscribing it. <br>
 
 #### **Returns**
-subscribeShelf return a ShelfSubscription object which contains a unique subscription id and an unsubscribeShelf function. This object can be stored as an instance variable which is used to unsubscribe the subscription. We need to call unsubscribeShelf() function of the ShelfSubscription object.
+>**ShelfSubscription:** subscribeShelf return a ShelfSubscription object which contains a unique subscription id and an unsubscribeShelf function. This object can be stored as an instance variable which is used to unsubscribe the subscription. We need to call unsubscribeShelf() function of the ShelfSubscription object.
 
 #### **Example**
 ```
@@ -73,12 +74,57 @@ const shelfSubscription = subscribeShelf('DEMO_SHELF_KEY', (data: ShelfData) => 
 shelfSubscription.unsubscribeShelf(); // Should be called when subscription is no longer required or scope of this code is going to be cleared.
 ```
 
-### **1.3 getShelfData(subscriptionKey: string)**
+### **1.3 subscribeShelfFilter(filterArgs: ShelfEventFilterArgs, filteredCallback: data => any, triggerNow?: boolean )**
+subscribeShelfFilter is a customized implementation of subscribeShelf. subscribeShelfFilter allows us to subscribe for a data change and get invoked only when certain conditions are met. This is achieved by passing a new argument eventFilter which is a function. This function recieves shelf data which contains current data, previous data and the subscription key. By comparing previous data and current data this function can return the desired data. Along with eventFilter, we also need to pass filteredCallback function, which is the actual callback function. If eventFilter function returns any data based on the logic implemented, only then filteredCallback will get called. If the eventFilter condition is not met, then please return null or undefined and by doing this it will not invoke filteredCallback. This is best suited for use cases where in a complex object is any small specific portion has changed and based on that it needs to be notified. Please refer example for more details.
+
+#### **Params**
+>**ShelfEventFilterArgs:** ShelfEventFilterArgs is a grouped object of the required parameters. This contains following inner parameters.<br>
+>>**subscriptionKey:** Name or unique identifier of the Shelf data. This can be any string name. This should be unique for the kind of of API data we store. This is a mandatory field <br>
+>>**eventFilter:** eventFilter is a function which recieves the shelf data that includes current data, previous data and key. eventFilter needs to implement the logic for which it wants specific data. Based to the logic if it finds the right data, then it needs to return the specifc data or the data it is looking for. Only then it will invoke filteredCallback. If the logic doesn't find the right data then it should return null or undefined in order to avoid invoking filteredCallback falsely.
+>
+>**filteredCallback:** filteredCallback is the callback that gets called when implemnted logic inside eventFilter has been met and it also returns the desired data. This is a mandatory field.<br>
+>**triggerNow:** This is an optional boolean field. On passing this field as true, first it will invoke eventFilter with shelf data. Then is eventFilter returns any data, then filteredCallback will be invoked with the same data immediately<br>
+
+#### **Returns**
+>**ShelfSubscription:** subscribeShelf return a ShelfSubscription object which contains a unique subscription id and an unsubscribeShelf function. This object can be stored as an instance variable which is used to unsubscribe the subscription. We need to call unsubscribeShelf() function of the ShelfSubscription object.
+
+#### **Example**
+```
+import {setShelf, subscribeShelfFilter} from 'sitar';
+
+const shelfKey = 'DEMO_SHELF_KEY';
+
+setShelf(shelfKey, {alfa: 10, beta: 20});
+const shelfFilterArgs = {
+    subscriptionKey: shelfKey,
+    eventFilter: (data: ShelfData) => {
+        if (data.current && data.previous) {
+            if (data.current.beta !== data.previous.beta) {
+                // This will return the difference in specific data 
+                // also it can return additional data as well as shelfData below.
+                return {beta: data.current.beta, shelfData: data}
+            }
+        }
+        return null;
+    },
+};
+
+const shelfSubscription = subscribeShelfFilter(shelfFilterArgs, (data: any) => {    
+    console.log(data.beta); // Prints 30
+    console.log(data.shelfData); 
+    // Prints {"current": {"alfa": 10, "beta": 30}, "previous": {"alfa": 10, "beta": 20}, "key": "DEMO_SHELF_KEY"}
+});
+setShelf(shelfKey, {alfa: 10, beta: 30});
+
+shelfSubscription.unsubscribeShelf(); // Should be called when subscription is no longer required or scope of this code is going to be cleared.
+```
+
+### **1.4 getShelfData(subscriptionKey: string)**
 getShelfData returns the latest data available for the specified subscription key. This data again contains the same three imformation we recieve while subscribing the subscription key. Current, previous and the subscription key for which we have subscribed.
 
 
 #### **Params**
->**key:** This is the key for which the object has been stored using setShelf. This is a mandatory field.
+>**subscriptionKey:** Name or unique identifier of the Shelf data. This can be any string name. This should be unique for the kind of of data we store. This is a mandatory field <br>
 
 #### **Example**
 ```
@@ -89,6 +135,15 @@ console.log('Current data', latestData.current);
 console.log('Previoud data', latestData.previous);
 console.log('Subscribed key', latestData.key);
 ```
+
+### **1.5 clearShelf(subscriptionKey: string): boolean**
+clearShelf removes all data from shelf memory against the specified subscription key. Please note that this also removes all the subscriptions for the subscription key. Before removing all data clearShelf invokes all the subscription callbacks with null data. After that it removed the subscriptions.
+
+#### **Params**
+>**subscriptionKey:** Name or unique identifier of the Shelf data. This can be any string name. This should be unique for the kind of of data we store. This is a mandatory field <br>
+
+#### **Returns**
+>**boolean:** On successful removal of all the subscriptions for the subscription it returns boolean true. Otherwise it returns false.
 
 
 ## 2. API Shelf
