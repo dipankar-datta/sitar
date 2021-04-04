@@ -67,7 +67,7 @@ export const subscribeShelfFilter = (
 
 export const clearShelf = (subscriptionKey: string): boolean => {
   return ShelfManager.clearShelf(subscriptionKey);
-}
+};
 
 class ShelfManager {
   private static shelf: Map<string, ShelfSubscriptionData> = new Map();
@@ -190,15 +190,15 @@ class ShelfManager {
       if (subData) {
         subData.subscriptions.forEach((eventSub: ShelfEventSubscription) => {
           if (eventSub.callback) {
-            eventSub.callback({current: null, previous: null, key: subscriptionKey});
+            eventSub.callback({ current: null, previous: null, key: subscriptionKey });
           } else if (eventSub.filteredCallback) {
             eventSub.filteredCallback(null);
           }
         });
       }
-  
+
       return this.shelf.delete(subscriptionKey);
     }
-    return false;    
-  } 
+    return false;
+  }
 }

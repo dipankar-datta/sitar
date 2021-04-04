@@ -1,4 +1,11 @@
-import { setShelf, getShelfData, subscribeShelf, ShelfData, subscribeShelfFilter, clearShelf } from '../../shelf/shelf-manager';
+import {
+  setShelf,
+  getShelfData,
+  subscribeShelf,
+  ShelfData,
+  subscribeShelfFilter,
+  clearShelf,
+} from '../../shelf/shelf-manager';
 
 describe('Test Shelf', () => {
   test('Should set data in Shelf', () => {
@@ -291,7 +298,7 @@ describe('Test Shelf', () => {
     }
   });
 
-  test('Should test clearing shelf', done => {
+  test('Should test clearing shelf', (done) => {
     const testKey = 'SHELF_TEST_KEY_10';
     const testData = { alfa: 10, beta: 20 };
     setShelf(testKey, testData);
@@ -326,6 +333,5 @@ describe('Test Shelf', () => {
     expect(clearShelf(testKey)).toBeFalsy();
     expect(clearShelf(null as any)).toBeFalsy();
     done();
-
   });
 });
