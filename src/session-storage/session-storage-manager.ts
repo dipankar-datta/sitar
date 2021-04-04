@@ -55,18 +55,17 @@ class SessionStorageManager {
                     dataAdded = data;
                 }
             } else {
+               sessionStorage.setItem(subscriptionKey, newDataString ? newDataString : '');
                this.map.set(subscriptionKey, {subscriptions: new Map()});
             }        
             
             if (dataAdded) {
-                subsData?.subscriptions.forEach((eventSub: SessionStorageEventSubscription) => {
-                    if (eventSub) {
-                        if (subsData) {
-                            eventSub.eventHandler({
-                                subscriptionKey: subscriptionKey,
-                                data: prevData ? handleJsonParse(prevData) : prevData
-                            });
-                        }
+                subsData?.subscriptions.forEach((eventSub: SessionStorageEventSubscription) => {                  
+                    if (subsData) {
+                        eventSub.eventHandler({
+                            subscriptionKey,
+                            data: _.cloneDeep(data)
+                        });
                     }
                 });
             }
@@ -81,13 +80,11 @@ class SessionStorageManager {
                 subscriptionData.subscriptions.set(id, { subscriptionId: id, eventHandler: callback });
 
                 if (triggerNow) {
-                    const sessionData = sessionStorage.getItem(subscriptionKey);
-                    
+                    const sessionData = sessionStorage.getItem(subscriptionKey);                    
                     callback({
                         subscriptionKey, 
                         data: sessionData ? _.cloneDeep(handleJsonParse(sessionData)) : sessionData
-                    });
-                    
+                    });                    
                 }
             } else {
                 const subsData: SessionStorageSubscriptionData = {                    
@@ -96,6 +93,8 @@ class SessionStorageManager {
                 subsData.subscriptions.set(id, {subscriptionId: id, eventHandler: callback});
                 this.map.set(subscriptionKey, subsData);
             }
+        } else {
+            throw new Error('Invalid subscription key or callback.');
         }
 
         return { id, unsubscribeSessionStorage: () => this.unsubscribeSessionStorage(subscriptionKey, id) };
