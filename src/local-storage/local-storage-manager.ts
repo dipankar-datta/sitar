@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import * as _ from'lodash';
-import { handleJsonParse } from '../util/util';
+import { handleJsonParse, handleJsonStringify } from '../util/util';
 
 export interface LocalStorageData {
     subscriptionKey: string,
@@ -46,7 +46,7 @@ class LocalStorageManager {
     static setLocalStorage(subscriptionKey: string, data: any) {
         if (subscriptionKey) {
             const subsData = this.map.get(subscriptionKey);
-            const newDataString = data ? ((typeof data === 'string') ? data : JSON.stringify(data)) : undefined;
+            const newDataString = handleJsonStringify(data);
             let dataAdded: any;
             const prevData = localStorage.getItem(subscriptionKey); 
             if (subsData) {                
@@ -55,6 +55,7 @@ class LocalStorageManager {
                     dataAdded = data;
                 }
             } else {
+               localStorage.setItem(subscriptionKey, newDataString ? newDataString : '');
                this.map.set(subscriptionKey, {subscriptions: new Map()});
             }        
             
@@ -64,7 +65,7 @@ class LocalStorageManager {
                         if (subsData) {
                             eventSub.callback({
                                 subscriptionKey,
-                                data: handleJsonParse(data)
+                                data: _.cloneDeep(data)
                             });
                         }
                     }
@@ -73,7 +74,7 @@ class LocalStorageManager {
         }
     }
 
-    static subscribeLocalStorage(subscriptionKey: string, callback: LocalStorageEventHandler, triggerNow = false): LocalStorageSubscription {
+    static subscribeLocalStorage(subscriptionKey: string, callback: LocalStorageEventHandler, triggerNow?: boolean): LocalStorageSubscription {
         const id = uuid();
         if (subscriptionKey && callback) {
             const subscriptionData = this.map.get(subscriptionKey);
@@ -94,6 +95,8 @@ class LocalStorageManager {
                 subsData.subscriptions.set(id, {subscriptionId: id, callback});
                 this.map.set(subscriptionKey, subsData);
             }
+        } else {
+            throw new Error('Invalid subscription key or callback.');
         }
 
         return { subscriptionId: id, unsubscribeLocalStorage: () => this.unsubscribeLocalStorage(subscriptionKey, id) };
@@ -108,7 +111,7 @@ class LocalStorageManager {
             const subscriptionData = this.map.get(subscriptionKey);
             subscriptionData?.subscriptions.forEach((value: LocalStorageEventSubscription, key: string) => {
                 value.callback({
-                    subscriptionKey: key,
+                    subscriptionKey,
                     data: null                    
                 });
             });
