@@ -40,7 +40,7 @@ describe('Test Local Storage', () => {
 
     });
 
-    test('Test setting local storage data with subscription', () => {
+    test('Test setting local storage data with subscription', done => {
         const testLocalStorageKey = 'TEST_LOCAL_STORAGE_KEY_3';
         
 
@@ -61,12 +61,13 @@ describe('Test Local Storage', () => {
         const doUnsub = async () => {
             expect(sub.unsubscribeLocalStorage()).toBeTruthy();
             expect(sub.unsubscribeLocalStorage()).toBeFalsy();
+            done();
         }
 
         doUnsub();
     });
 
-    test('Test setting local storage data with subscription and triggerNow', () => {
+    test('Test setting local storage data with subscription and triggerNow', done => {
         const testLocalStorageKey = 'TEST_LOCAL_STORAGE_KEY_4';
         setLocalStorage(testLocalStorageKey, sampleTestData);
 
@@ -85,12 +86,13 @@ describe('Test Local Storage', () => {
         const doUnsub = async () => {
             expect(sub.unsubscribeLocalStorage()).toBeTruthy();
             expect(sub.unsubscribeLocalStorage()).toBeFalsy();
+            done();
         }
 
         doUnsub();
     });
 
-    test('Test subscribing before setting local storage data', () => {
+    test('Test subscribing before setting local storage data', done => {
         const testLocalStorageKey = 'TEST_LOCAL_STORAGE_KEY_5';
         const sub = subscribeLocalStorage(testLocalStorageKey, (localStorageData: LocalStorageData) => {
             expect(localStorageData).not.toBeNull();    
@@ -112,6 +114,7 @@ describe('Test Local Storage', () => {
         const doUnsub = async () => {
             expect(sub.unsubscribeLocalStorage()).toBeTruthy();
             expect(sub.unsubscribeLocalStorage()).toBeFalsy();
+            done();
         }
         doUnsub();
     });
@@ -126,7 +129,7 @@ describe('Test Local Storage', () => {
         }
     });
 
-    test('Test deleting local storage data with subscription', () => {
+    test('Test deleting local storage data with subscription', done => {
         const testLocalStorageKey = 'TEST_LOCAL_STORAGE_KEY_7';
         setLocalStorage(testLocalStorageKey, sampleTestData);
         const sub = subscribeLocalStorage(testLocalStorageKey, (localStorageData: LocalStorageData) => {
@@ -139,8 +142,8 @@ describe('Test Local Storage', () => {
         });
         deleteLocalStorage(testLocalStorageKey);
         const doUnsub = async () => {
-            expect(sub.unsubscribeLocalStorage()).toBeTruthy();
             expect(sub.unsubscribeLocalStorage()).toBeFalsy();
+            done();
         }
         doUnsub();
     });

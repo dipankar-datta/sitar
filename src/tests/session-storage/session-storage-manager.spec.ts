@@ -40,7 +40,7 @@ describe('Test Session Storage', () => {
 
     });
 
-    test('Test setting session storage data with subscription', () => {
+    test('Test setting session storage data with subscription', done => {
         const testSessionStorageKey = 'TEST_SESSION_STORAGE_KEY_3';
         
 
@@ -61,12 +61,13 @@ describe('Test Session Storage', () => {
         const doUnsub = async () => {
             expect(sub.unsubscribeSessionStorage()).toBeTruthy();
             expect(sub.unsubscribeSessionStorage()).toBeFalsy();
+            done();
         }
 
         doUnsub();
     });
 
-    test('Test setting session storage data with subscription and triggerNow', () => {
+    test('Test setting session storage data with subscription and triggerNow', done => {
         const testSessionStorageKey = 'TEST_SESSION_STORAGE_KEY_4';
         setSessionStorage(testSessionStorageKey, sampleTestData);
 
@@ -85,12 +86,13 @@ describe('Test Session Storage', () => {
         const doUnsub = async () => {
             expect(sub.unsubscribeSessionStorage()).toBeTruthy();
             expect(sub.unsubscribeSessionStorage()).toBeFalsy();
+            done();
         }
 
         doUnsub();
     });
 
-    test('Test subscribing before setting session storage data', () => {
+    test('Test subscribing before setting session storage data', done => {
         const testSessionStorageKey = 'TEST_SESSION_STORAGE_KEY_5';
         const sub = subscribeSessionStorage(testSessionStorageKey, (sessionStorageData: SessionStorageData) => {
             expect(sessionStorageData).not.toBeNull();    
@@ -112,6 +114,7 @@ describe('Test Session Storage', () => {
         const doUnsub = async () => {
             expect(sub.unsubscribeSessionStorage()).toBeTruthy();
             expect(sub.unsubscribeSessionStorage()).toBeFalsy();
+            done();
         }
         doUnsub();
     });
@@ -126,7 +129,7 @@ describe('Test Session Storage', () => {
         }
     });
 
-    test('Test deleting session storage data with subscription', () => {
+    test('Test deleting session storage data with subscription', done => {
         const testSessionStorageKey = 'TEST_SESSION_STORAGE_KEY_7';
         setSessionStorage(testSessionStorageKey, sampleTestData);
         const sub = subscribeSessionStorage(testSessionStorageKey, (sessionStorageData: SessionStorageData) => {
@@ -139,8 +142,8 @@ describe('Test Session Storage', () => {
         });
         deleteSessionStorage(testSessionStorageKey);
         const doUnsub = async () => {
-            expect(sub.unsubscribeSessionStorage()).toBeTruthy();
             expect(sub.unsubscribeSessionStorage()).toBeFalsy();
+            done();
         }
         doUnsub();
     });

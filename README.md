@@ -14,7 +14,7 @@ Currently Sitar provides following modules as part of it's implementation.
 ### **4. Set**
 ### **5. Local Storage**
 ### **6. Session Storage**
-### **7. Invoker**
+### **7. Echo**
 
 <br/>
  
@@ -593,36 +593,36 @@ const isDeleted = deleteSessionStorage('DEMO_SESSION_STORAGE_KEY');
 console.log("Is successfully deleted : ", isDeleted);
 ```
 
-## 7. Invoker
-Invoker allows us to invoke one or more specific functions in the application which has subscribed to specific user defined event. When the Invoker invokes for specific subscription key, it triggers callbacks for all the subscriptions. <br>
+## 7. Echo
+Echo allows us to invoke one or more specific functions in the application which has subscribed to specific user defined event. When the Echo invokes for specific subscription key, it triggers callbacks for all the subscriptions. <br>
 
-Invoker prvides following features.
->**invoke** <br>
->**subscribeInvoker** <br>
+Echo prvides following features.
+>**echo** <br>
+>**subscribeEcho** <br>
 
-### **7.1 invoke(subscriptionKey: string, data?: any)**
-invoke lets us invoking all the subscribed callbacks when needed. It also allows us to pass any data while invoking.
+### **7.1 echo(subscriptionKey: string, data?: any)**
+echo lets us invoke all the subscribed callbacks when needed. It also allows us to pass any data while invoking.
 
 
 #### **Params**
-> **subscriptionKey:** Name or unique identifier of Invoker. This can be any string name. This should be unique for the Invoker. This is the subscription key. This is a mandatory field <br>
+> **subscriptionKey:** Name or unique identifier of Echo. This can be any string name. This should be unique for the Echo. This is the subscription key. This is a mandatory field <br>
 > **data:** This is optional field. This can be passed when we need to pass any data while invoking all the subscribed callback. All the subscribed callbacks will recieve this data if they are recieving the data in their function parameters.
 
 #### **Example**
 
 ```
-import {invoke} from 'sitar';
+import {echo} from 'sitar';
 
-invoke('DEMO_INVOKER_KEY', {"score": "4/5"});
+invoke('DEMO_ECHO_KEY', {"score": "4/5"});
 
 ```
 
-### **7.2 subscribeInvoker(subscriptionKey: string, callback: InvokerEventHandler): InvokerSubscription**
-subscribeInvoker allows us to subscribe for event triggers by invoke. Whenever invoke triggers an event, all the subscriptions will be invoked by their callbacks.
+### **7.2 subscribeEcho(subscriptionKey: string, callback: EchoEventHandler): EchoSubscription**
+subscribeEcho allows us to subscribe for event triggers by Echo. Whenever echo triggers an event, all the subscriptions will be invoked by their callbacks.
 
 #### **Params**
-> **subscriptionKey:** Name or unique identifier of Invoker. This can be any string name. This should be unique for the Invoker. This is the subscription key. This is a mandatory field <br>
->**callback:** callback is a callback function that gets triggered whenever invoke is triggered. callback may revieve data depending on if invoke is sending dat while invoking. . This is a mandatory field. <br>
+> **subscriptionKey:** Name or unique identifier of Echo. This can be any string name. This should be unique for the Echo. This is the subscription key. This is a mandatory field <br>
+>**callback:** callback is a callback function that gets triggered whenever echo is triggered. callback may revieve data depending on if echo is sending data while invoking. . This is a mandatory field. <br>
 
 #### **Returns**
->**InvokerSubscription:** subscribeInvoker returns InvokerSubscription object which contains subscription id and unsubscribeInvoker() function. unsubscribeInvoker() function helps unsubscribing the subscription. When we need to unsubscribe the Invoker, then we can call unsubscribeInvoker function we recieved in the InvokerSubscription object while subscribing the invoker.
+>**EchoSubscription:** subscribeEcho returns EchoSubscription object which contains subscription id and unsubscribeEcho() function. unsubscribeEcho() function helps unsubscribing the subscription. When we need to unsubscribe the Echo, then we can call unsubscribeEcho function we recieved in the EchoSubscription object while subscribing the Echo.
