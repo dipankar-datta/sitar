@@ -121,7 +121,7 @@ class MapManager {
     if (subscriptionKey && callback) {
       const subscriptionData = this.map.get(subscriptionKey);
       if (subscriptionData) {
-        subscriptionData.subscriptions.set(id, { subscriptionId: id, callback: callback });
+        subscriptionData.subscriptions.set(id, { subscriptionId: id, callback });
 
         if (triggerNow) {
           if (subscriptionData.map) {
@@ -139,7 +139,7 @@ class MapManager {
           map: new Map(),
           subscriptions: new Map(),
         };
-        subsData.subscriptions.set(id, { subscriptionId: id, callback: callback });
+        subsData.subscriptions.set(id, { subscriptionId: id, callback });
         this.map.set(subscriptionKey, subsData);
       }
     }
@@ -179,14 +179,14 @@ class MapManager {
   static clearMap(subscriptionKey: string): boolean {
     const subsData = this.map.get(subscriptionKey);
 
-    subsData?.subscriptions?.forEach((subsData: MapEventSubscription) => {
+    subsData?.subscriptions?.forEach((eventSub: MapEventSubscription) => {
       const eventData: MapData = {
         key: null as any,
         current: null,
         previous: null,
         map: null,
       };
-      subsData.callback(eventData);
+      eventSub.callback(eventData);
     });
     return this.map.delete(subscriptionKey);
   }

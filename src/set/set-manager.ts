@@ -105,7 +105,7 @@ export class SetManager {
     if (subscriptionKey && callback) {
       const subscriptionData = this.map.get(subscriptionKey);
       if (subscriptionData) {
-        subscriptionData.subscriptions.set(id, { subscriptionId: id, callback: callback });
+        subscriptionData.subscriptions.set(id, { subscriptionId: id, callback });
 
         if (triggerNow) {
           if (subscriptionData.set) {
@@ -120,7 +120,7 @@ export class SetManager {
       } else {
         const subsData: SetSubscriptionData = {
           set: new CustomSet(),
-          subscriptions: new Map().set(id, { subscriptionId: id, callback: callback }),
+          subscriptions: new Map().set(id, { subscriptionId: id, callback }),
         };
         this.map.set(subscriptionKey, subsData);
       }

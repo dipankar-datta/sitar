@@ -91,7 +91,7 @@ class LocalStorageManager {
         if (triggerNow) {
           const localData = localStorage.getItem(subscriptionKey);
           callback({
-            subscriptionKey: subscriptionKey,
+            subscriptionKey,
             data: localData ? _.cloneDeep(handleJsonParse(localData)) : null,
           });
         }
