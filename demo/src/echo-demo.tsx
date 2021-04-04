@@ -1,15 +1,15 @@
-import { invoke, InvokerSubscription, subscribeInvoker } from "sitar";
+import { echo, EchoSubscription, subscribeEcho } from "sitar";
 import React, {Component} from 'react';
 import { handleJsonStringify } from "sitar";
 
-const INVOKER_TARGET_KEY = 'INVOKER_TARGET_KEY';
+const ECHO_TARGET_KEY = 'ECHO_TARGET_KEY';
 
 
-interface IInvokerDemoState {
+interface IEchoDemoState {
     displayData: string;
 }
 
-export class InvokerDemo extends Component<any, IInvokerDemoState> {
+export class EchoDemo extends Component<any, IEchoDemoState> {
 
     constructor(props: any) {
         super(props);
@@ -18,32 +18,32 @@ export class InvokerDemo extends Component<any, IInvokerDemoState> {
         };
     }
 
-    private sessionSubs?: InvokerSubscription;
+    private sessionSubs?: EchoSubscription;
 
     componentDidMount() {        
         if (!this.sessionSubs) {
-            this.sessionSubs = subscribeInvoker(INVOKER_TARGET_KEY, (invokerData: any) => {
-                const displayData = JSON.stringify(invokerData);
+            this.sessionSubs = subscribeEcho(ECHO_TARGET_KEY, (echoData: any) => {
+                const displayData = JSON.stringify(echoData);
                 this.setState({displayData});
             });
         }
-        invoke(INVOKER_TARGET_KEY, 100);
+        echo(ECHO_TARGET_KEY, 100);
     }
 
     componentWillUnmount() {
         if (this.sessionSubs) {
-            this.sessionSubs.unsubscribeInvoker();
+            this.sessionSubs.unsubscribeEcho();
         }
     }
 
     render() {       
         return (
             <div>
-                <label style={{fontWeight: 'bold'}}>Main Invoker Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>Main Echo Data: </label> {this.state.displayData}
                 <br/><br/>
-                <div><InvokerUpdater/></div>
+                <div><EchoUpdater/></div>
                 <br/><br/>
-                <div><InvokerUpdater/></div>
+                <div><EchoUpdater/></div>
             </div>
         );
     }
@@ -52,13 +52,13 @@ export class InvokerDemo extends Component<any, IInvokerDemoState> {
 
 
 
-interface IInvokerUpdaterState {
+interface IEchoUpdaterState {
     displayData: string,
     localData: string
 }
-class InvokerUpdater extends Component<any, IInvokerUpdaterState> {
+class EchoUpdater extends Component<any, IEchoUpdaterState> {
 
-    private invokerSubs?: InvokerSubscription;
+    private echoSubs?: EchoSubscription;
 
     constructor(props: any) {
         super(props);
@@ -68,9 +68,9 @@ class InvokerUpdater extends Component<any, IInvokerUpdaterState> {
         };
     }
     componentDidMount() {
-        if (!this.invokerSubs) {
-            this.invokerSubs = subscribeInvoker(INVOKER_TARGET_KEY, (sessionStorageData: any) => {
-                console.log('Invoker fired: ', sessionStorageData);
+        if (!this.echoSubs) {
+            this.echoSubs = subscribeEcho(ECHO_TARGET_KEY, (sessionStorageData: any) => {
+                console.log('Echo fired: ', sessionStorageData);
                 if (sessionStorageData) {
                     this.setState({displayData: ''+handleJsonStringify(sessionStorageData)});   
                 }                            
@@ -79,8 +79,8 @@ class InvokerUpdater extends Component<any, IInvokerUpdaterState> {
     }
 
     componentWillUnmount() {
-        if (this.invokerSubs) {
-            this.invokerSubs.unsubscribeInvoker();
+        if (this.echoSubs) {
+            this.echoSubs.unsubscribeEcho();
         }
     }
 
@@ -93,17 +93,17 @@ class InvokerUpdater extends Component<any, IInvokerUpdaterState> {
     }
 
     setHandler = () => {
-        invoke(INVOKER_TARGET_KEY, this.state.localData);
+        echo(ECHO_TARGET_KEY, this.state.localData);
     }
 
     unsubscribeHandler = () => {
-        this.invokerSubs?.unsubscribeInvoker();
+        this.echoSubs?.unsubscribeEcho();
     }
 
     render() {
         return (
             <div style={{border: '1px solid red', padding: '10px'}}>
-                <label style={{fontWeight: 'bold'}}>Invoker Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>Echo Data: </label> {this.state.displayData}
                 <br/><br/>
                 <label>Value: </label><input onChange={this.valueChangeHandler} name='value' type="text"/>
                 <br/>&nbsp;<br/>

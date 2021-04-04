@@ -4,7 +4,7 @@ import { LocalStorageDemo } from './local-storage-demo';
 import { MapDemo } from './map-demo';
 import { SessionStorageDemo } from './session-storage-demo';
 import { SetDemo } from './set-demo';
-import { InvokerDemo} from './invoker-demo';
+import { EchoDemo} from './echo-demo';
 import ShelfDemo from './shelf-demo';
 
 interface IAppState {
@@ -30,7 +30,7 @@ export default class App extends Component<any, IAppState> {
       case 'set' : return <SetDemo/>;
       case 'local' : return <LocalStorageDemo/>;
       case 'session' : return <SessionStorageDemo/>;
-      case 'invoker' : return <InvokerDemo/>;
+      case 'echo' : return <EchoDemo/>;
       default: return <></>;
     }
   }
@@ -43,7 +43,7 @@ export default class App extends Component<any, IAppState> {
       {name: 'set', desc: 'Set'},
       {name: 'local', desc: 'Local Storage'},
       {name: 'session', desc: 'Session Storage'},
-      {name: 'invoker', desc: 'Invoker'}
+      {name: 'echo', desc: 'Echo'}
     ];
 
     return options.map((item, index) => {

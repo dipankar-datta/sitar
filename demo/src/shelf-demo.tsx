@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { getData, setShelf, ShelfData, subscribe, Subscription } from 'sitar';
+import { getShelfData , setShelf, ShelfData, subscribeShelf, ShelfSubscription } from 'sitar';
 import Updater from './updater/updater';
 
 export const TARGET_ROW_KEY = 'TARGET_KEY';
@@ -11,7 +11,7 @@ interface IRowsState {
 
 export default class ShelfDemo extends Component<any, IRowsState> {
 
-    private subscription?: Subscription;
+    private subscription?: ShelfSubscription;
 
     constructor(props: any) {
         super(props);
@@ -22,54 +22,22 @@ export default class ShelfDemo extends Component<any, IRowsState> {
         setShelf(TARGET_ROW_KEY, 'Hello Sitar');
 
         if (!this.subscription) {
-            this.subscription = subscribe(TARGET_ROW_KEY, (newData: ShelfData) => {
+            this.subscription = subscribeShelf(TARGET_ROW_KEY, (newData: ShelfData) => {
                 this.setState({text: newData.current});
             }, true);
         }        
     }
 
     fetchLatestData = () => {
-        this.setState({latestData: getData(TARGET_ROW_KEY).current});
+        this.setState({latestData: getShelfData(TARGET_ROW_KEY).current});
     }
 
 
     componentWillUnmount() {
         if (this.subscription) {
-            this.subscription.unsubscribe();
+            this.subscription.unsubscribeShelf();
         }
     }
-
-    // render() {
-    //     const tdStyle = {width: '200px'};
-    //     const updateProps = {
-    //         shelfKey: TARGET_ROW_KEY,
-    //         initialText: 'Initi local text'
-    //     };
-    //     return (
-    //         <div>
-    //             <label style={{fontWeight: 'bold'}}>Target data: </label>{this.state.text}
-    //             <table>
-    //                 <tbody>
-    //                     <tr>
-    //                         {['One', 'Two'].map((item: string, index: number) => {
-    //                             return (
-    //                                 <td style={tdStyle} key={index}>
-    //                                     <label style={{fontWeight: 'bold'}}>{item}</label>
-    //                                     <Updater {...updateProps}/>
-    //                                 </td>
-    //                             );
-    //                         })}
-    //                     </tr>
-    //                 </tbody>                    
-    //             </table>
-    //             <div style={{marginTop: '15px'}}>
-    //                 <button onClick={this.fetchLatestData} >Get latest data</button>
-    //                 <br/>
-    //                 <label>{this.state.latestData}</label>
-    //             </div>
-    //         </div>
-    //     );
-    // }
 
     render() {
         const tdStyle = { marginTop:'20px'};

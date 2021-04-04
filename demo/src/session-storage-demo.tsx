@@ -21,7 +21,7 @@ export class SessionStorageDemo extends Component<any, ISessionStorageDemoState>
     componentDidMount() {        
         if (!this.sessionSubs) {
             this.sessionSubs = subscribeSessionStorage(LOCAL_STORAGE_TARGET_KEY, (mapData: SessionStorageData) => {
-                const displayData = JSON.stringify(mapData.current, null, 2);
+                const displayData = JSON.stringify(mapData.data, null, 2);
                 this.setState({displayData});
             }, true);
         }
@@ -67,7 +67,7 @@ export class SessionStorageUpdater extends Component<any, IMapUpdaterState> {
         if (!this.sessionSubs) {
             this.sessionSubs = subscribeSessionStorage(LOCAL_STORAGE_TARGET_KEY, (sessionStorageData: SessionStorageData) => {
                 console.log('Session Storage Updated: ', sessionStorageData);
-                this.setState({displayData: JSON.stringify(sessionStorageData.current)});               
+                this.setState({displayData: JSON.stringify(sessionStorageData.data)});               
             });
         }
     }

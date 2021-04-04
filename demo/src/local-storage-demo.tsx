@@ -21,7 +21,7 @@ export class LocalStorageDemo extends Component<any, ILocalStorageDemoState> {
     componentDidMount() {        
         if (!this.localSubs) {
             this.localSubs = subscribeLocalStorage(LOCAL_STORAGE_TARGET_KEY, (mapData: LocalStorageData) => {
-                const displayData = JSON.stringify(mapData.current, null, 2);
+                const displayData = JSON.stringify(mapData.data, null, 2);
                 this.setState({displayData});
             }, true);
         }
@@ -67,7 +67,7 @@ export class LocalStorageUpdater extends Component<any, IMapUpdaterState> {
         if (!this.localSubs) {
             this.localSubs = subscribeLocalStorage(LOCAL_STORAGE_TARGET_KEY, (localStorageData: LocalStorageData) => {
                 console.log('Local Storage Updated: ', localStorageData);
-                this.setState({displayData: JSON.stringify(localStorageData.current)});               
+                this.setState({displayData: JSON.stringify(localStorageData.data)});               
             });
         }
     }

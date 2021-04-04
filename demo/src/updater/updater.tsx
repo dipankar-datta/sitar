@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { setShelf, ShelfData, subscribe, Subscription } from 'sitar';
+import { setShelf, ShelfData, subscribeShelf, ShelfSubscription } from 'sitar';
 
 interface IUpdaterState {
     shelfText: string,
@@ -13,7 +13,7 @@ interface IUpdaterProps {
 
 export default class Updater extends Component<IUpdaterProps, IUpdaterState>{
 
-    private subscription?: Subscription;
+    private subscription?: ShelfSubscription;
 
     constructor(props: IUpdaterProps) {
         super(props);
@@ -27,7 +27,7 @@ export default class Updater extends Component<IUpdaterProps, IUpdaterState>{
 
     componentDidMount() {
         if (!this.subscription) {
-            this.subscription = subscribe(this.props.shelfKey, (newData: ShelfData) => {
+            this.subscription = subscribeShelf(this.props.shelfKey, (newData: ShelfData) => {
                 this.setState({shelfText: newData.current});
             });
         }   
@@ -43,12 +43,12 @@ export default class Updater extends Component<IUpdaterProps, IUpdaterState>{
 
     doUnsubscribe = () => {
         if (this.subscription) {
-            this.subscription.unsubscribe();
+            this.subscription.unsubscribeShelf();
         }
     }
 
     componentWillUnmount() {
-        this.subscription?.unsubscribe();
+        this.subscription?.unsubscribeShelf();
     }
 
     render() {

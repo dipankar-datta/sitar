@@ -106,7 +106,7 @@ export class SetUpdater extends Component<any, ISetUpdaterState> {
     render() {
         return (
             <div style={{border: '1px solid red', padding: '10px'}}>
-                <label style={{fontWeight: 'bold'}}>Map Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>Set Data: </label> {this.state.displayData}
                 <br/><br/>
                 <label>Item: </label><input onChange={this.keyChangeHandler} value={this.state.setItem} name='key' type="text"/>&nbsp;&nbsp;
                 <br/>&nbsp;<br/>
