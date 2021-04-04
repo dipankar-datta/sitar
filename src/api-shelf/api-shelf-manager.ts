@@ -69,7 +69,9 @@ export default class ApiShelfManager {
 
             shelf.subscriptions.forEach((eventSub: ShelfEventSubscription, key: string) => {
               if (shelf) {
-                eventSub.callback(shelf.data);
+                if (eventSub.callback) {
+                  eventSub.callback(shelf.data);
+                }
               }
             });
           });
