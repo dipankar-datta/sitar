@@ -48,13 +48,13 @@ describe('Test Session Storage', () => {
     const testSessionStorageKey = 'TEST_SESSION_STORAGE_KEY_3';
 
     const sub = subscribeSessionStorage(testSessionStorageKey, (sessionStorageData: SessionStorageData) => {
-      expect(sessionStorageData.data).toBeDefined();
-      expect(sessionStorageData.data.alfa).toBeDefined();
-      expect(sessionStorageData.data.delta).toBeDefined();
-      expect(sessionStorageData.data.theta).toBeDefined();
-      expect(sessionStorageData.data.alfa).toBe(10);
-      expect(sessionStorageData.data.delta).toBe(20);
-      expect(sessionStorageData.data.theta).toBe(30);
+      expect(sessionStorageData.current).toBeDefined();
+      expect(sessionStorageData.current.alfa).toBeDefined();
+      expect(sessionStorageData.current.delta).toBeDefined();
+      expect(sessionStorageData.current.theta).toBeDefined();
+      expect(sessionStorageData.current.alfa).toBe(10);
+      expect(sessionStorageData.current.delta).toBe(20);
+      expect(sessionStorageData.current.theta).toBe(30);
       expect(sessionStorageData.subscriptionKey).toBeDefined();
       expect(sessionStorageData.subscriptionKey).toBe(testSessionStorageKey);
     });
@@ -77,13 +77,13 @@ describe('Test Session Storage', () => {
     const sub = subscribeSessionStorage(
       testSessionStorageKey,
       (sessionStorageData: SessionStorageData) => {
-        expect(sessionStorageData.data).toBeDefined();
-        expect(sessionStorageData.data.alfa).toBeDefined();
-        expect(sessionStorageData.data.delta).toBeDefined();
-        expect(sessionStorageData.data.theta).toBeDefined();
-        expect(sessionStorageData.data.alfa).toBe(10);
-        expect(sessionStorageData.data.delta).toBe(20);
-        expect(sessionStorageData.data.theta).toBe(30);
+        expect(sessionStorageData.current).toBeDefined();
+        expect(sessionStorageData.current.alfa).toBeDefined();
+        expect(sessionStorageData.current.delta).toBeDefined();
+        expect(sessionStorageData.current.theta).toBeDefined();
+        expect(sessionStorageData.current.alfa).toBe(10);
+        expect(sessionStorageData.current.delta).toBe(20);
+        expect(sessionStorageData.current.theta).toBe(30);
         expect(sessionStorageData.subscriptionKey).toBeDefined();
         expect(sessionStorageData.subscriptionKey).toBe(testSessionStorageKey);
       },
@@ -104,13 +104,13 @@ describe('Test Session Storage', () => {
     const sub = subscribeSessionStorage(testSessionStorageKey, (sessionStorageData: SessionStorageData) => {
       expect(sessionStorageData).not.toBeNull();
       if (sessionStorageData) {
-        expect(sessionStorageData.data).toBeDefined();
-        expect(sessionStorageData.data.alfa).toBeDefined();
-        expect(sessionStorageData.data.delta).toBeDefined();
-        expect(sessionStorageData.data.theta).toBeDefined();
-        expect(sessionStorageData.data.alfa).toBe(10);
-        expect(sessionStorageData.data.delta).toBe(20);
-        expect(sessionStorageData.data.theta).toBe(30);
+        expect(sessionStorageData.current).toBeDefined();
+        expect(sessionStorageData.current.alfa).toBeDefined();
+        expect(sessionStorageData.current.delta).toBeDefined();
+        expect(sessionStorageData.current.theta).toBeDefined();
+        expect(sessionStorageData.current.alfa).toBe(10);
+        expect(sessionStorageData.current.delta).toBe(20);
+        expect(sessionStorageData.current.theta).toBe(30);
         expect(sessionStorageData.subscriptionKey).toBeDefined();
         expect(sessionStorageData.subscriptionKey).toBe(testSessionStorageKey);
       }
@@ -142,7 +142,7 @@ describe('Test Session Storage', () => {
     const sub = subscribeSessionStorage(testSessionStorageKey, (sessionStorageData: SessionStorageData) => {
       expect(sessionStorageData).not.toBeNull();
       if (sessionStorageData) {
-        expect(sessionStorageData.data).toBeNull();
+        expect(sessionStorageData.current).toBeNull();
         expect(sessionStorageData.subscriptionKey).toBeDefined();
         expect(sessionStorageData.subscriptionKey).toBe(testSessionStorageKey);
       }
