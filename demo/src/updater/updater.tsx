@@ -8,7 +8,8 @@ interface IUpdaterState {
 
 interface IUpdaterProps {
     shelfKey: string,
-    initialText?: string
+    initialText?: string,
+    componentName: string
 }
 
 export default class Updater extends Component<IUpdaterProps, IUpdaterState>{
@@ -28,6 +29,7 @@ export default class Updater extends Component<IUpdaterProps, IUpdaterState>{
     componentDidMount() {
         if (!this.subscription) {
             this.subscription = subscribeShelf(this.props.shelfKey, (newData: ShelfData) => {
+                console.log(`${this.props.componentName} : `, newData);
                 this.setState({shelfText: newData.current});
             });
         }   
@@ -43,18 +45,23 @@ export default class Updater extends Component<IUpdaterProps, IUpdaterState>{
 
     doUnsubscribe = () => {
         if (this.subscription) {
+            console.log(`Unsubscribed: ${this.props.componentName}`);
             this.subscription.unsubscribeShelf();
         }
     }
 
     componentWillUnmount() {
+        console.log(`Unsubscribed: ${this.props.componentName}`);
         this.subscription?.unsubscribeShelf();
     }
 
     render() {
         return (
             <div style={{border: '1px solid red', padding: '15px'}}>
-                <label>Store Value: </label>{this.state.shelfText}<br/>
+                <div style={{fontWeight: 'bold', paddingBottom: '10px'}}>
+                    <label >{this.props.componentName}</label>
+                </div>                
+                <label>Store Value: </label>{this.state.shelfText}<br/><br/>
                 <input onChange={this.inputChangeHandler} value={this.state.localText} type="text"/> &nbsp;&nbsp;
                 <button onClick={this.updateShelf} >Update</button> &nbsp;&nbsp;
                 <button onClick={this.doUnsubscribe} >Unsubscribe</button>

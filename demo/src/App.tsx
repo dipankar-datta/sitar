@@ -8,7 +8,7 @@ import { EchoDemo} from './echo-demo';
 import ShelfDemo from './shelf-demo';
 
 interface IAppState {
-  category: 'shelf' | 'map' | 'apishelf' | 'set' | 'local' | 'session' | 'invoker';
+  category: 'shelf' | 'map' | 'apishelf' | 'set' | 'local' | 'session' | 'echo';
 }
 
 export default class App extends Component<any, IAppState> {
@@ -63,7 +63,7 @@ export default class App extends Component<any, IAppState> {
   render() {
     return (      
       <div style={{display: 'table', margin: 'auto', width: '90%'}}>
-        <h2>Jatayu Demo</h2> 
+        <h2>Sitar Demo</h2> <h4>Please open browser console to see emitted data.</h4>
         <div>
           {this.loadRadioButtons()}
         </div>        

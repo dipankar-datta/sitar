@@ -48,13 +48,13 @@ describe('Test Local Storage', () => {
     const testLocalStorageKey = 'TEST_LOCAL_STORAGE_KEY_3';
 
     const sub = subscribeLocalStorage(testLocalStorageKey, (localStorageData: LocalStorageData) => {
-      expect(localStorageData.data).toBeDefined();
-      expect(localStorageData.data.alfa).toBeDefined();
-      expect(localStorageData.data.delta).toBeDefined();
-      expect(localStorageData.data.theta).toBeDefined();
-      expect(localStorageData.data.alfa).toBe(10);
-      expect(localStorageData.data.delta).toBe(20);
-      expect(localStorageData.data.theta).toBe(30);
+      expect(localStorageData.current).toBeDefined();
+      expect(localStorageData.current.alfa).toBeDefined();
+      expect(localStorageData.current.delta).toBeDefined();
+      expect(localStorageData.current.theta).toBeDefined();
+      expect(localStorageData.current.alfa).toBe(10);
+      expect(localStorageData.current.delta).toBe(20);
+      expect(localStorageData.current.theta).toBe(30);
       expect(localStorageData.subscriptionKey).toBeDefined();
       expect(localStorageData.subscriptionKey).toBe(testLocalStorageKey);
     });
@@ -77,13 +77,13 @@ describe('Test Local Storage', () => {
     const sub = subscribeLocalStorage(
       testLocalStorageKey,
       (localStorageData: LocalStorageData) => {
-        expect(localStorageData.data).toBeDefined();
-        expect(localStorageData.data.alfa).toBeDefined();
-        expect(localStorageData.data.delta).toBeDefined();
-        expect(localStorageData.data.theta).toBeDefined();
-        expect(localStorageData.data.alfa).toBe(10);
-        expect(localStorageData.data.delta).toBe(20);
-        expect(localStorageData.data.theta).toBe(30);
+        expect(localStorageData.current).toBeDefined();
+        expect(localStorageData.current.alfa).toBeDefined();
+        expect(localStorageData.current.delta).toBeDefined();
+        expect(localStorageData.current.theta).toBeDefined();
+        expect(localStorageData.current.alfa).toBe(10);
+        expect(localStorageData.current.delta).toBe(20);
+        expect(localStorageData.current.theta).toBe(30);
         expect(localStorageData.subscriptionKey).toBeDefined();
         expect(localStorageData.subscriptionKey).toBe(testLocalStorageKey);
       },
@@ -104,13 +104,13 @@ describe('Test Local Storage', () => {
     const sub = subscribeLocalStorage(testLocalStorageKey, (localStorageData: LocalStorageData) => {
       expect(localStorageData).not.toBeNull();
       if (localStorageData) {
-        expect(localStorageData.data).toBeDefined();
-        expect(localStorageData.data.alfa).toBeDefined();
-        expect(localStorageData.data.delta).toBeDefined();
-        expect(localStorageData.data.theta).toBeDefined();
-        expect(localStorageData.data.alfa).toBe(10);
-        expect(localStorageData.data.delta).toBe(20);
-        expect(localStorageData.data.theta).toBe(30);
+        expect(localStorageData.current).toBeDefined();
+        expect(localStorageData.current.alfa).toBeDefined();
+        expect(localStorageData.current.delta).toBeDefined();
+        expect(localStorageData.current.theta).toBeDefined();
+        expect(localStorageData.current.alfa).toBe(10);
+        expect(localStorageData.current.delta).toBe(20);
+        expect(localStorageData.current.theta).toBe(30);
         expect(localStorageData.subscriptionKey).toBeDefined();
         expect(localStorageData.subscriptionKey).toBe(testLocalStorageKey);
       }
@@ -142,7 +142,7 @@ describe('Test Local Storage', () => {
     const sub = subscribeLocalStorage(testLocalStorageKey, (localStorageData: LocalStorageData) => {
       expect(localStorageData).not.toBeNull();
       if (localStorageData) {
-        expect(localStorageData.data).toBeNull();
+        expect(localStorageData.current).toBeNull();
         expect(localStorageData.subscriptionKey).toBeDefined();
         expect(localStorageData.subscriptionKey).toBe(testLocalStorageKey);
       }

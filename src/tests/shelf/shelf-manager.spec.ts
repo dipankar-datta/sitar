@@ -16,11 +16,13 @@ describe('Test Shelf', () => {
     const resultData = getShelfData(testKey);
 
     expect(resultData).not.toBeNull();
-    expect(resultData.current).not.toBeNull();
-    expect(resultData.previous).toBeNull();
-    expect(resultData.key).toBe(testKey);
-    expect(resultData.current.alfa).toBe(10);
-    expect(resultData.current.beta).toBe(20);
+    if (resultData) {
+      expect(resultData.current).not.toBeNull();
+      expect(resultData.previous).toBeNull();
+      expect(resultData.subscriptionKey).toBe(testKey);
+      expect(resultData.current.alfa).toBe(10);
+      expect(resultData.current.beta).toBe(20);
+    }
   });
 
   test('Should test for subscriptions before setting data', () => {
@@ -30,7 +32,7 @@ describe('Test Shelf', () => {
       expect(data).not.toBeNull();
       expect(data.current).not.toBeNull();
       expect(data.previous).toBeNull();
-      expect(data.key).toBe(testKey);
+      expect(data.subscriptionKey).toBe(testKey);
       expect(data.current.alfa).toBe(10);
       expect(data.current.beta).toBe(20);
       expect(sub1.unsubscribeShelf()).toBeTruthy();
@@ -41,7 +43,7 @@ describe('Test Shelf', () => {
       expect(data).not.toBeNull();
       expect(data.current).not.toBeNull();
       expect(data.previous).toBeNull();
-      expect(data.key).toBe(testKey);
+      expect(data.subscriptionKey).toBe(testKey);
       expect(data.current.alfa).toBe(10);
       expect(data.current.beta).toBe(20);
       expect(sub2.unsubscribeShelf()).toBeTruthy();
@@ -64,7 +66,7 @@ describe('Test Shelf', () => {
         expect(data).not.toBeNull();
         expect(data.current).not.toBeNull();
         expect(data.previous).toBeNull();
-        expect(data.key).toBe(testKey);
+        expect(data.subscriptionKey).toBe(testKey);
         expect(data.current.alfa).toBe(10);
         expect(data.current.beta).toBe(20);
       },
@@ -77,7 +79,7 @@ describe('Test Shelf', () => {
         expect(data).not.toBeNull();
         expect(data.current).not.toBeNull();
         expect(data.previous).toBeNull();
-        expect(data.key).toBe(testKey);
+        expect(data.subscriptionKey).toBe(testKey);
         expect(data.current.alfa).toBe(10);
         expect(data.current.beta).toBe(20);
       },
@@ -103,7 +105,7 @@ describe('Test Shelf', () => {
       expect(data).not.toBeNull();
       expect(data.current).not.toBeNull();
       expect(data.previous).not.toBeNull();
-      expect(data.key).toBe(testKey);
+      expect(data.subscriptionKey).toBe(testKey);
       expect(data.current.zeta).toBe(30);
       expect(data.current.gamma).toBe(40);
       expect(sub1.unsubscribeShelf()).toBeTruthy();
@@ -114,7 +116,7 @@ describe('Test Shelf', () => {
       expect(data).not.toBeNull();
       expect(data.current).not.toBeNull();
       expect(data.previous).not.toBeNull();
-      expect(data.key).toBe(testKey);
+      expect(data.subscriptionKey).toBe(testKey);
       expect(data.current.zeta).toBe(30);
       expect(data.current.gamma).toBe(40);
       expect(sub2.unsubscribeShelf()).toBeTruthy();
@@ -325,7 +327,8 @@ describe('Test Shelf', () => {
       if (data) {
         expect(data.current).toBeNull();
         expect(data.previous).toBeNull();
-        expect(data.key).toBe(testKey);
+        expect(data.subscriptionKey).not.toBeNull();
+        expect(data.subscriptionKey).toBe(testKey);
       }
     });
 

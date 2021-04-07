@@ -2,10 +2,11 @@ import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
 
 export interface MapData {
-  key: string | null;
+  mapKey: string | null;
   current: any | null;
   previous: any | null;
   map: Map<any, any> | null;
+  subscriptionKey: string;
 }
 
 export type MapEventHandler = (data: MapData) => void;
@@ -25,8 +26,8 @@ export type MapSubscriptionData = {
   subscriptions: Map<string, MapEventSubscription>;
 };
 
-export const setMap = (subscriptionKey: string, entryKey: string, newData: any) => {
-  MapManager.setMap(subscriptionKey, entryKey, newData);
+export const setMap = (subscriptionKey: string, mapKey: string, newData: any) => {
+  MapManager.setMap(subscriptionKey, mapKey, newData);
 };
 
 export const loadMap = (subscriptionKey: string, obj: { [objKey: string]: any }) => {
@@ -49,24 +50,28 @@ export const clearMap = (subscriptionKey: string): boolean => {
   return MapManager.clearMap(subscriptionKey);
 };
 
-export const deleteMapEntry = (subscriptionKey: string, entryKey: string): boolean => {
-  return MapManager.deleteMapEntry(subscriptionKey, entryKey);
+export const deleteMapEntry = (subscriptionKey: string, mapKey: string): boolean => {
+  return MapManager.deleteMapEntry(subscriptionKey, mapKey);
 };
 
 class MapManager {
   private static map: Map<string, MapSubscriptionData> = new Map();
 
-  static setMap(subscriptionKey: string, entryKey: string, newData: any) {
-    if (subscriptionKey) {
+  static setMap(subscriptionKey: string, mapKey: string, newData: any) {
+    if (subscriptionKey && mapKey) {
       let subData = this.map.get(subscriptionKey);
       const newDataClone = _.cloneDeep(newData);
       let prevData: any;
       if (subData) {
-        prevData = subData.map.get(entryKey);
-        subData.map.set(entryKey, newDataClone);
+        if (!_.isEqual(subData.map.get(mapKey), newData)) {
+          prevData = subData.map.get(mapKey);
+          subData.map.set(mapKey, newDataClone);
+        } else {
+          return;
+        }
       } else {
         subData = {
-          map: new Map().set(entryKey, newData),
+          map: new Map().set(mapKey, newData),
           subscriptions: new Map(),
         };
         this.map.set(subscriptionKey, subData);
@@ -76,15 +81,18 @@ class MapManager {
         if (eventSub) {
           if (subData) {
             const eventData: MapData = {
-              key: entryKey,
+              mapKey: mapKey,
               current: newDataClone,
               previous: _.cloneDeep(prevData),
               map: _.cloneDeep(subData.map),
+              subscriptionKey
             };
             eventSub.callback(eventData);
           }
         }
       });
+    } else {
+      throw new Error('Invalid subscription key or map key.');
     }
   }
 
@@ -106,13 +114,16 @@ class MapManager {
 
       subData.subscriptions.forEach((eventSub: MapEventSubscription) => {
         const eventData: MapData = {
-          key: null,
+          mapKey: null,
           current: null,
           previous: null,
           map: subData ? _.cloneDeep(subData.map) : null,
+          subscriptionKey
         };
         eventSub.callback(eventData);
       });
+    } else {
+      throw new Error('Invalid subscription key or data.');
     }
   }
 
@@ -126,10 +137,11 @@ class MapManager {
         if (triggerNow) {
           if (subscriptionData.map) {
             const eventData: MapData = {
-              key: null,
+              mapKey: null,
               current: null,
               previous: null,
               map: _.cloneDeep(subscriptionData.map),
+              subscriptionKey
             };
             callback(eventData);
           }
@@ -142,38 +154,45 @@ class MapManager {
         subsData.subscriptions.set(id, { subscriptionId: id, callback });
         this.map.set(subscriptionKey, subsData);
       }
+    } else {
+      throw new Error('Invalid subscription key or callback.');
     }
 
     return { id, unsubscribeMap: () => this.unsubscribeMap(subscriptionKey, id) };
   }
 
-  static getMap(key: string): Map<any, any> | undefined {
-    const subsData = this.map.get(key);
+  static getMap(subscriptionKey: string): Map<any, any> | undefined {
+    const subsData = this.map.get(subscriptionKey);
     return subsData ? _.cloneDeep(subsData.map) : undefined;
   }
 
-  static unsubscribeMap(key: string, id: string): boolean {
-    const subsData = this.map.get(key);
-    return subsData ? subsData.subscriptions.delete(id) : false;
+  static unsubscribeMap(subscriptionKey: string, subscriptionId: string): boolean {
+    const subsData = this.map.get(subscriptionKey);
+    return subsData ? subsData.subscriptions.delete(subscriptionId) : false;
   }
 
-  static deleteMapEntry(key: string, entryKey: string): boolean {
-    const subsData: MapSubscriptionData | undefined = this.map.get(key);
-    const prevData = subsData?.map.get(entryKey);
-    const deleted = subsData?.map.delete(entryKey);
-    if (deleted) {
-      subsData?.subscriptions.forEach((eventSub: MapEventSubscription) => {
-        const eventData: MapData = {
-          key: entryKey,
-          current: null,
-          previous: prevData,
-          map: _.cloneDeep(subsData.map),
-        };
-        eventSub.callback(eventData);
-      });
+  static deleteMapEntry(subscriptionKey: string, mapKey: string): boolean {
+    if (subscriptionKey && mapKey) {
+      const subsData: MapSubscriptionData | undefined = this.map.get(subscriptionKey);
+      const prevData = subsData?.map.get(mapKey);
+      const deleted = subsData?.map.delete(mapKey);
+      if (deleted) {
+        subsData?.subscriptions.forEach((eventSub: MapEventSubscription) => {
+          const eventData: MapData = {
+            mapKey: mapKey,
+            current: null,
+            previous: prevData,
+            map: _.cloneDeep(subsData.map),
+            subscriptionKey
+          };
+          eventSub.callback(eventData);
+        });
+      }
+  
+      return deleted === true;
+    } else {
+      throw new Error('Invalid subscription key or map key.');
     }
-
-    return deleted === true;
   }
 
   static clearMap(subscriptionKey: string): boolean {
@@ -181,10 +200,11 @@ class MapManager {
 
     subsData?.subscriptions?.forEach((eventSub: MapEventSubscription) => {
       const eventData: MapData = {
-        key: null as any,
+        mapKey: null as any,
         current: null,
         previous: null,
         map: null,
+        subscriptionKey
       };
       eventSub.callback(eventData);
     });

@@ -2,9 +2,9 @@ import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
 
 export interface ShelfData {
-  key: string;
   current: any;
   previous: any;
+  subscriptionKey: string;
 }
 
 export type ShelfEventHandler = (data: ShelfData) => void;
@@ -45,7 +45,7 @@ export const subscribeShelf = (
   return ShelfManager.subscribeShelf(subscriptionKey, callback, triggerNow);
 };
 
-export const getShelfData = (subscriptionKey: string): any => {
+export const getShelfData = (subscriptionKey: string): ShelfData | null => {
   return ShelfManager.getShelfData(subscriptionKey);
 };
 
@@ -82,9 +82,9 @@ class ShelfManager {
       } else {
         shelf = {
           data: {
-            key: subscriptionKey,
             current: newDataClone,
             previous: null,
+            subscriptionKey
           },
           subscriptions: new Map(),
         };
@@ -121,9 +121,9 @@ class ShelfManager {
       } else {
         const subsData: ShelfSubscriptionData = {
           data: {
-            key: subscriptionKey,
             current: null,
             previous: null,
+            subscriptionKey
           },
           subscriptions: new Map(),
         };
@@ -158,9 +158,9 @@ class ShelfManager {
       } else {
         const subsData: ShelfSubscriptionData = {
           data: {
-            key: subscriptionKey,
             current: null,
             previous: null,
+            subscriptionKey
           },
           subscriptions: new Map(),
         };
@@ -174,7 +174,7 @@ class ShelfManager {
     return { id, unsubscribeShelf: () => this.unsubscribeShelf(subscriptionKey, id) };
   }
 
-  static getShelfData(subscriptionKey: string): any {
+  static getShelfData(subscriptionKey: string): ShelfData | null {
     const subsData = this.shelf.get(subscriptionKey);
     return subsData ? _.cloneDeep(subsData.data) : null;
   }
@@ -190,7 +190,12 @@ class ShelfManager {
       if (subData) {
         subData.subscriptions.forEach((eventSub: ShelfEventSubscription) => {
           if (eventSub.callback) {
-            eventSub.callback({ current: null, previous: null, key: subscriptionKey });
+            eventSub.callback({
+               current: null, 
+               previous: null,
+               subscriptionKey 
+              }
+            );
           } else if (eventSub.filteredCallback) {
             eventSub.filteredCallback(null);
           }
