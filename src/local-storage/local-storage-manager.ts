@@ -98,7 +98,7 @@ class LocalStorageManager {
           callback({
             subscriptionKey,
             current: localData,
-            previous: _.cloneDeep(localData)
+            previous: localData ? _.cloneDeep(localData) : null
           });
         }
       } else {
@@ -140,8 +140,8 @@ class LocalStorageManager {
     return localData ? handleJsonParse(localData) : null;
   }
 
-  static unsubscribeLocalStorage(subscriptionKey: string, id: string): boolean {
+  static unsubscribeLocalStorage(subscriptionKey: string, subscriptionId: string): boolean {
     const subsData = this.map.get(subscriptionKey);
-    return subsData ? subsData.subscriptions.delete(id) : false;
+    return subsData ? subsData.subscriptions.delete(subscriptionId) : false;
   }
 }

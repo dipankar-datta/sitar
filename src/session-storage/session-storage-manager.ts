@@ -69,7 +69,7 @@ class SessionStorageManager {
             eventSub.eventHandler({
               subscriptionKey,
               current: _.cloneDeep(data),
-              previous: _.cloneDeep(prevData),
+              previous: prevData ? _.cloneDeep(handleJsonParse(prevData)) : null,
             });
           }
         });
@@ -124,7 +124,7 @@ class SessionStorageManager {
         value.eventHandler({
           subscriptionKey,
           current: null,
-          previous: _.cloneDeep(currentData),
+          previous: _.cloneDeep(handleJsonParse(currentData)),
         });
       });
       this.map.delete(subscriptionKey);
