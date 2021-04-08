@@ -45,13 +45,11 @@ export default class Updater extends Component<IUpdaterProps, IUpdaterState>{
 
     doUnsubscribe = () => {
         if (this.subscription) {
-            console.log(`Unsubscribed: ${this.props.componentName}`);
             this.subscription.unsubscribeShelf();
         }
     }
 
     componentWillUnmount() {
-        console.log(`Unsubscribed: ${this.props.componentName}`);
         this.subscription?.unsubscribeShelf();
     }
 

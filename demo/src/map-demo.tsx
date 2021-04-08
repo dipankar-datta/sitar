@@ -107,7 +107,7 @@ export class MapUpdater extends Component<IMapUpdaterProps, IMapUpdaterState> {
     render() {
         return (
             <div style={{border: '1px solid red', padding: '10px'}}>
-                <label style={{fontWeight: 'bold'}}>Map Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>{this.props.componentName} Data: </label> {this.state.displayData}
                 <br/><br/>
                 <label>Key: </label><input onChange={this.keyChangeHandler} name='key' type="text"/>&nbsp;&nbsp;
                 <label>Value: </label><input onChange={this.valueChangeHandler} name='value' type="text"/>
