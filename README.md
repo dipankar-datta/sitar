@@ -54,7 +54,7 @@ subscribeShelf subscribes changes for any object against a specific subscription
 >**callback:** callback is a callback function we need to provide when we subscribe to a specific key. This function gets called whenever setShelf(key, data) gets called from any where in the application for the same key. eventHandler is a mandatory field. callback recieives an objected which has three information. <br>
 >> **current:** This contains the latest version of the object.<br>
 >> **previous:** This contains the previous version of the object.<br>
->> **key:** The key for which it was subscribed. <br>
+>> **subscriptionKey:** The subscription key for which it was subscribed. <br>
 >
 >**triggerNow:** This is an optional boolean field. On passing this field as true, the provided eventHanler function will be triggered immediately with current data. This is helpful when it is understood that the target object or data is already available in the memory and it can be accessed immediately along with subscribing it. <br>
 
@@ -253,12 +253,12 @@ Following are the features currently provided by Map
 >**deleteMapEntry** <br>
 >**clearMap**
 
-### **3.1 setMap(subscriptionKey: string, entryKey: string, data: any)**
+### **3.1 setMap(subscriptionKey: string, mapKey: string, data: any)**
 setMap takes the data aginst the subscription key and the object key and then stores it in the browser memory. After storing it invokes all the callback functions which are provided as part of subscription for the subscription key. setMap stores data based on the subscriptionKey and the entryKey.
 
 #### **Params**
 >**subscriptionKey**: Name or unique identifier of Map. This can be any string name. This should be unique for the kind of Map we store. This is the subscription key. This is a mandatory field <br>
->**entryKey**: entryKey is the key for the map we stored in the memory. Everytime we call setMap and provide this key, it will store the data agains this key inside the stored map. On passing same key it will override the previous data agains this key . This is a mandatory field.<br>
+>**mapKey**: mapKey is the key for the map we stored in the memory. Everytime we call setMap and provide this key, it will store the data agains this key inside the stored map. On passing same key it will override the previous data agains this key . This is a mandatory field.<br>
 >**data**: This is the data we intend to stored in the map for the specified entryKey.
 
 #### **Example**
@@ -299,13 +299,20 @@ const mapData = getMap('DEMO_MAP_KEY');
 console.log(mapData);
 ```
 
-### **3.4 subscribeMap(key: string, callback: Function, triggerNow?: false): MapSubscription**
+### **3.4 subscribeMap(subscriptionKey: string, callback: Function, triggerNow?: false): MapSubscription**
 subscribeMap is used for subscribing for any changes in the Map.
 
 #### **Params**
 >**subscriptionKey:** Name or unique identifier of Map. This can be any string name. This should be unique for the kind of Map we store. This is the subscription key. This is a mandatory field <br>
->**callback:** We need to provide a callback function while subscribing to the Map changes. On changes in the Map, this callback function gets called with following information. 1. Entry key for which the data has changed. 2. Current version of the entry value. 3. Previous version of the entry value. 4. Main Map data. This is a mandatory field.<br>
+>**callback:** We need to provide a callback function while subscribing to the Map changes. On changes in the Map, this callback function gets called with following information. Note that callback won't be called if same data is being updated.
+>>**mapKey:** map key for which the data has changed. <br>
+>>**current:** Current value for the map key.<br>
+>>**previous:** Previous value for the map key.<br>
+>>**map:** Map data for the subscription key.<br>
+>>**subscriptionKey:** Subscription key for which it is subscribed.<br>
+>
 >**triggerNow:** This is an optional boolean field. This is useful when we need the Map data immediately and at the same time we need to subscribe for any changes in the Map. In such cases we need to provide this parameter as true.
+
 
 #### **Returns**
 subscribeMap returns MapSubscription object which contains subscription id and unsubscribeMap() function. unsubscribeMap() function helps unsubscribing the subscription. When we need to unsubscribe the Map, then we can call unsubscribeMap function we recieved in the MapSubscription object while subscribing the Map.
@@ -315,29 +322,30 @@ subscribeMap returns MapSubscription object which contains subscription id and u
 import {subscribeMap} from 'sitar';
 
 const mapSubscription = subscribeMap('DEMO_MAP_KEY', (data: any) => {
-    console.log(data.key); // This is not subscription key. This is the key for the entry that has changed.
+    console.log(data.mapKey);
     console.log(data.current);
     console.log(data.previous);
+    console.log(data.subscriptionKey);
     console.log(data.map);
 }, true);
 mapSubscription.unsubscribeMap(); // Should be called when subscription is no longer required or scope of this code is going to be cleared.
 ```
 
-### **3.5 deleteMapEntry(subscriptionKey: string, entryKey: string): boolean**
+### **3.5 deleteMapEntry(subscriptionKey: string, mapKey: string): boolean**
 deleteMapEntry is used for deleting or removing an entry from the Map in the browsers memory. On deletion it triggers all the callbacks for the specified subscription key. 
 
 #### **Params**
 >**subscriptionKey:** Name or unique identifier of Map. This can be any string name. This should be unique for the kind of Map we store. This is the subscription key. This is a mandatory field <br>
->**entryKey:** Entry key for the Map which we intend to delete from the Map. <br>
+>**mapKey:** Map key for the Map which we intend to delete from the Map. <br>
 
 #### **Returns**
-deleteMapEntry returns boolean true on successful deletion and returns false otherwise.
+>**boolean:** deleteMapEntry returns boolean true on successful deletion and returns false otherwise.
 
 #### **Example**
 ```
 import {deleteMapEntry} from 'sitar';
 
-const deleted = deleteMapEntry('DEMO_MAP_KEY', 'demoMapEntryKey');
+const deleted = deleteMapEntry('DEMO_MAP_KEY', 'demoMapKey');
 console.log(`Is deleted : ${deleted}`);
 ```
 
@@ -409,6 +417,7 @@ subscribeSet is used for subscribing any changes in the Set.
 >>**added:** This field contains the items which has been added as latest change in the Set.<br>
 >>**removed:** This field contains the items which has been removed as latest change in the Set.<br>
 >>**set:** This field contains the latest version of the Set.<br>
+>>**subscriptionKey:** Subscription key for which it was subscribed. <br>
 >
 >**triggerNow:** This is an optional boolean field. This is useful when we need the Set data immediately and at the same time we need to subscribe for any changes in the Set. In such cases we need to provide this parameter as true.
 
@@ -513,7 +522,8 @@ subscribeLocalStorage allows us to subscribe to any changes done in the local st
 > **subscriptionKey:** Name or unique identifier of Local Storage. This can be any string name. This should be unique for the kind of Local Storage we store. This is the subscription key. This is a mandatory field <br>
 >**callback:** callback is a callback function that gets triggered whenever there are changes in the local storage for the subscription key. This is a mandatory field. callback recieves an object when it is triggered. That object has following two information <br>
 >>**subscriptionKey:** The same subscription key for which it was subscribed.<br>
->>**data:** This is the JSON parsed data we recieve.<br>
+>>**current:** This is latest local storage data parsed into JSON and then recieved.<br>
+>>**previous:** This is previous local storage data parsed into JSON and then recieved.<br>
 >
 >**triggerNow:** This is an optional boolean field. This is useful when we need the local storage data immediately and at the same time we need to subscribe for any changes in the local storage. In such cases we need to provide this parameter as true.
 
@@ -527,7 +537,8 @@ import {subscribeLocalStorage} from 'sitar';
 
 const subscription = subscribeLocalStorage('DEMO_LOCAL_STORAGE_KEY', (callBackData: LocalStorageData) => {
     console.log(callBackData.subscriptionKey);
-    console.log(callBackData.data);
+    console.log(callBackData.current);
+    console.log(callBackData.previous);
 }, true);
 
 subscription.unsubscribeLocalStorage(); // Should be called when subscription is no longer required or scope of this code is going to be cleared.
@@ -609,7 +620,8 @@ subscribeSessionStorage allows us to subscribe to any changes done in the sessio
 > **subscriptionKey:** Name or unique identifier of Session Storage. This can be any string name. This should be unique for the kind Session Storage we store. This is the subscription key. This is a mandatory field <br>
 >**callback:** callback is a callback function that gets triggered whenever there are changes in the session storage for the subscription key. This is a mandatory field. callback recieves an object when it is triggered. That object has following two information <br>
 >>**subscriptionKey:** The same subscription key for which it was subscribed.<br>
->>**data:** This is the JSON parsed data we recieve.<br>
+>>**current:** This is latest session storage data parsed into JSON and then recieved.<br>
+>>**previous:** This is previous session storage data parsed into JSON and then recieved.<br>
 >
 >**triggerNow:** This is an optional boolean field. This is useful when we need the session storage data immediately and at the same time we need to subscribe for any changes in the session storage. In such cases we need to provide this parameter as true.
 
