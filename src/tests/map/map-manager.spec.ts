@@ -25,7 +25,7 @@ describe('Test MAP', () => {
         expect(mapData).not.toBeNull();
         expect(mapData.current).toBeNull();
         expect(mapData.previous).toBeNull();
-        expect(mapData.key).toBeNull();
+        expect(mapData.mapKey).toBeNull();
         expect(mapData.map).not.toBeNull();
         expect(mapData.map).not.toBeUndefined();
         if (mapData.map) {
@@ -47,8 +47,8 @@ describe('Test MAP', () => {
       expect(mapData).not.toBeNull();
       expect(mapData.current).not.toBeNull();
       expect(mapData.previous).not.toBeNull();
-      expect(mapData.key).not.toBeNull();
-      expect(mapData.key).toBe('alfa');
+      expect(mapData.mapKey).not.toBeNull();
+      expect(mapData.mapKey).toBe('alfa');
       expect(mapData.current).toBe(100);
       expect(mapData.previous).toBe(10);
       expect(mapData.map).not.toBeNull();
@@ -70,7 +70,7 @@ describe('Test MAP', () => {
     }, 100);
   });
 
-  test('Test deleting map entry', (done) => {
+  test('Test deleting map item', (done) => {
     const testMapKey = 'TEST_MAP_KEY_4';
     loadMap(testMapKey, { ...sampleTestData });
 
@@ -78,8 +78,8 @@ describe('Test MAP', () => {
       expect(mapData).not.toBeNull();
       expect(mapData.current).toBeNull();
       expect(mapData.previous).not.toBeNull();
-      expect(mapData.key).not.toBeNull();
-      expect(mapData.key).toBe('gamma');
+      expect(mapData.mapKey).not.toBeNull();
+      expect(mapData.mapKey).toBe('gamma');
       expect(mapData.current).toBeNull();
       expect(mapData.previous).toBe(50);
       expect(mapData.map).not.toBeNull();
@@ -105,7 +105,7 @@ describe('Test MAP', () => {
       expect(mapData).not.toBeNull();
       expect(mapData.current).toBeNull();
       expect(mapData.previous).toBeNull();
-      expect(mapData.key).toBeNull();
+      expect(mapData.mapKey).toBeNull();
       expect(mapData.map).toBeNull();
       expect(sub.unsubscribeMap()).toBeTruthy();
       expect(sub.unsubscribeMap()).toBeFalsy();
@@ -126,7 +126,7 @@ describe('Test MAP', () => {
         expect(mapData).not.toBeNull();
         expect(mapData.current).toBeNull();
         expect(mapData.previous).toBeNull();
-        expect(mapData.key).toBeNull();
+        expect(mapData.mapKey).toBeNull();
         expect(mapData.map).not.toBeNull();
         if (mapData.map) {
           expect(mapData.map.get('zeta')).toBe(70);
@@ -151,7 +151,7 @@ describe('Test MAP', () => {
       expect(mapData).not.toBeNull();
       expect(mapData.current).toBe(90);
       expect(mapData.previous).toBeUndefined();
-      expect(mapData.key).toBe('gamma');
+      expect(mapData.mapKey).toBe('gamma');
       expect(mapData.map).not.toBeNull();
       if (mapData.map) {
         expect(mapData.map.get('gamma')).toBe(90);
@@ -176,7 +176,7 @@ describe('Test MAP', () => {
       expect(mapData).not.toBeNull();
       expect(mapData.current).toBeNull();
       expect(mapData.previous).toBeNull();
-      expect(mapData.key).toBeNull();
+      expect(mapData.mapKey).toBeNull();
       expect(mapData.map).not.toBeNull();
       if (mapData.map) {
         expect(mapData.map.get('zeta')).toBe(70);
@@ -193,5 +193,107 @@ describe('Test MAP', () => {
     loadMap(testMapKey, { delta: 80 });
 
     doUnsub();
+  });
+
+  test('Test duplicate map set.', (done) => {
+    const testMapKey = 'TEST_MAP_KEY_9';
+    setMap(testMapKey, 'theta', 70);
+    const sub = subscribeMap(testMapKey, (mapData: MapData) => {
+      expect(mapData).not.toBeNull();
+      expect(mapData.current).toBeNull();
+      expect(mapData.previous).toBeNull();
+      expect(mapData.mapKey).toBeNull();
+      expect(mapData.map).not.toBeNull();
+      if (mapData.map) {
+        expect(mapData.map.get('zeta')).toBe(70);
+        expect(mapData.map.get('delta')).toBe(80);
+      }
+    });
+
+    setMap(testMapKey, 'theta', 70);
+
+    const doUnsub = async () => {
+      expect(sub.unsubscribeMap()).toBeTruthy();
+      expect(sub.unsubscribeMap()).toBeFalsy();
+      done();
+    };
+
+    doUnsub();
+  });
+
+  test('Test setting map with invalid subscription key and map key.', () => {
+    const testMapKey = 'TEST_MAP_KEY_10';
+    try {
+      setMap(null as any, 'alfa', 70);
+    } catch (err: any) {
+      if (err) {
+        expect(err.message).toBe('Invalid subscription key or map key.');
+      }
+    }
+
+    try {
+      setMap(testMapKey, null as any, 70);
+    } catch (err: any) {
+      if (err) {
+        expect(err.message).toBe('Invalid subscription key or map key.');
+      }
+    }
+  });
+
+  test('Test loading map with invalid subscription key and data.', () => {
+    const testMapKey = 'TEST_MAP_KEY_11';
+    try {
+      loadMap(null as any, { alfa: 70 });
+    } catch (err: any) {
+      if (err) {
+        expect(err.message).toBe('Invalid subscription key or data.');
+      }
+    }
+
+    try {
+      loadMap(testMapKey, null as any);
+    } catch (err: any) {
+      if (err) {
+        expect(err.message).toBe('Invalid subscription key or data.');
+      }
+    }
+  });
+
+  test('Test subscribing with invalid subscription key and callback.', () => {
+    const testMapKey = 'TEST_MAP_KEY_12';
+    try {
+      subscribeMap(null as any, () => {});
+    } catch (err: any) {
+      if (err) {
+        expect(err.message).toBe('Invalid subscription key or callback.');
+      }
+    }
+
+    try {
+      subscribeMap(testMapKey, null as any);
+    } catch (err: any) {
+      if (err) {
+        expect(err.message).toBe('Invalid subscription key or callback.');
+      }
+    }
+  });
+
+  test('Test deleting entry with invalid subscription key and map key.', () => {
+    const testMapKey = 'TEST_MAP_KEY_13';
+    try {
+      deleteMapEntry(null as any, 'alfa');
+    } catch (err: any) {
+      if (err) {
+        expect(err.message).toBe('Invalid subscription key or map key.');
+      }
+    }
+
+    try {
+      deleteMapEntry(testMapKey, null as any);
+    } catch (err: any) {
+      if (err) {
+        expect(err.message).toBe('Invalid subscription key or map key.');
+      }
+    }
   });
 });

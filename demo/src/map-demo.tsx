@@ -39,9 +39,9 @@ export class MapDemo extends Component<any, IMapDemoState> {
             <div>
                 <label style={{fontWeight: 'bold'}}>Main Map Data: </label> {this.state.displayData}
                 <br/><br/>
-                <div><MapUpdater/></div>
+                <div><MapUpdater componentName="Map Component One"/></div>
                 <br/><br/>
-                <div><MapUpdater/></div>
+                <div><MapUpdater componentName="Map Component Two"/></div>
             </div>
         );
     }
@@ -53,11 +53,15 @@ interface IMapUpdaterState {
     key: string,
     value: any
 }
-export class MapUpdater extends Component<any, IMapUpdaterState> {
+
+interface IMapUpdaterProps {   
+    componentName: string
+}
+export class MapUpdater extends Component<IMapUpdaterProps, IMapUpdaterState> {
 
     private mapSubs?: MapSubscription;
 
-    constructor(props: any) {
+    constructor(props: IMapUpdaterProps) {
         super(props);
         this.state = {
             displayData: '',
@@ -68,7 +72,7 @@ export class MapUpdater extends Component<any, IMapUpdaterState> {
     componentDidMount() {
         if (!this.mapSubs) {
             this.mapSubs = subscribeMap(MAP_TARGET_KEY, (mapData: MapData) => {
-                console.log('Map Updated: ', mapData);
+                console.log(`${this.props.componentName}: `, mapData);
                 this.setState({displayData: JSON.stringify(mapToObject(mapData.map), null, 2)});               
             });
         }
@@ -97,7 +101,7 @@ export class MapUpdater extends Component<any, IMapUpdaterState> {
     }
 
     unsubscribeHandler = () => {
-
+        this.mapSubs?.unsubscribeMap();
     }
 
     render() {
@@ -112,6 +116,8 @@ export class MapUpdater extends Component<any, IMapUpdaterState> {
                     <button onClick={this.setHandler}>Set</button>
                     &nbsp;&nbsp;
                     <button onClick={this.deleteHandler} >Delete</button>
+                    &nbsp;&nbsp;
+                    <button onClick={this.unsubscribeHandler} >Unsubscribe</button>
                 </div>
             </div>
         );

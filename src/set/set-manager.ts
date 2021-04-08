@@ -6,6 +6,7 @@ export interface SetData {
   added?: any;
   removed?: any;
   set: any[] | null;
+  subscriptionKey: string;
 }
 
 export type SetEventHandler = (data: SetData) => void;
@@ -73,6 +74,7 @@ export class SetManager {
               removed: null,
               added: dataAdded,
               set: _.cloneDeep(subData.set.list),
+              subscriptionKey,
             };
             eventSub.callback(eventData);
           }
@@ -92,6 +94,7 @@ export class SetManager {
               removed: toDelete,
               added: null,
               set: _.cloneDeep(subsData.set.list),
+              subscriptionKey,
             };
             eventSub.callback(eventData);
           }
@@ -113,6 +116,7 @@ export class SetManager {
               removed: undefined,
               added: undefined,
               set: _.cloneDeep(subscriptionData.set.list),
+              subscriptionKey,
             };
             callback(eventData);
           }
@@ -146,6 +150,7 @@ export class SetManager {
         added: null,
         removed: null,
         set: null,
+        subscriptionKey,
       });
     });
     return this.map.delete(subscriptionKey);

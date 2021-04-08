@@ -4,7 +4,8 @@ import { handleJsonParse, handleJsonStringify } from '../util/util';
 
 export interface SessionStorageData {
   subscriptionKey: string;
-  data: any;
+  current: any;
+  previous: any;
 }
 
 export type SessionStorageEventHandler = (data: SessionStorageData) => void;
@@ -15,7 +16,7 @@ export interface SessionStorageEventSubscription {
 }
 
 export interface SessionStorageSubscription {
-  id: string;
+  subscriptionId: string;
   unsubscribeSessionStorage: () => void;
 }
 
@@ -67,7 +68,8 @@ class SessionStorageManager {
           if (subsData) {
             eventSub.eventHandler({
               subscriptionKey,
-              data: _.cloneDeep(data),
+              current: _.cloneDeep(data),
+              previous: prevData ? _.cloneDeep(handleJsonParse(prevData)) : null,
             });
           }
         });
@@ -87,10 +89,14 @@ class SessionStorageManager {
         subscriptionData.subscriptions.set(id, { subscriptionId: id, eventHandler: callback });
 
         if (triggerNow) {
-          const sessionData = sessionStorage.getItem(subscriptionKey);
+          let sessionData = sessionStorage.getItem(subscriptionKey);
+          if (sessionData) {
+            sessionData = _.cloneDeep(handleJsonParse(sessionData));
+          }
           callback({
             subscriptionKey,
-            data: sessionData ? _.cloneDeep(handleJsonParse(sessionData)) : sessionData,
+            current: sessionData,
+            previous: sessionData ? _.cloneDeep(sessionData) : null,
           });
         }
       } else {
@@ -104,7 +110,7 @@ class SessionStorageManager {
       throw new Error('Invalid subscription key or callback.');
     }
 
-    return { id, unsubscribeSessionStorage: () => this.unsubscribeSessionStorage(subscriptionKey, id) };
+    return { subscriptionId: id, unsubscribeSessionStorage: () => this.unsubscribeSessionStorage(subscriptionKey, id) };
   }
 
   static deleteSessionStorage(subscriptionKey: string): boolean {
@@ -117,7 +123,8 @@ class SessionStorageManager {
       subscriptionData?.subscriptions.forEach((value: SessionStorageEventSubscription, key: string) => {
         value.eventHandler({
           subscriptionKey,
-          data: null,
+          current: null,
+          previous: _.cloneDeep(handleJsonParse(currentData)),
         });
       });
       this.map.delete(subscriptionKey);
@@ -126,13 +133,13 @@ class SessionStorageManager {
     return deleted;
   }
 
-  static getSessionStorageData(key: string): any {
-    const sessionData = sessionStorage.getItem(key);
+  static getSessionStorageData(subscriptionKey: string): any {
+    const sessionData = sessionStorage.getItem(subscriptionKey);
     return sessionData ? handleJsonParse(sessionData) : null;
   }
 
-  static unsubscribeSessionStorage(key: string, id: string): boolean {
-    const subsData = this.map.get(key);
-    return subsData ? subsData.subscriptions.delete(id) : false;
+  static unsubscribeSessionStorage(subscriptionKey: string, subscriptionId: string): boolean {
+    const subsData = this.map.get(subscriptionKey);
+    return subsData ? subsData.subscriptions.delete(subscriptionId) : false;
   }
 }

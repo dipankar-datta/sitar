@@ -28,12 +28,12 @@ describe('Test API Shelf', () => {
       expect(data).not.toBeNull();
       expect(data.current).not.toBeNull();
       expect(data.previous).toBeNull();
-      expect(data.key).not.toBeNull();
+      expect(data.subscriptionKey).not.toBeNull();
 
       expect(data.current.alfa).toBe(10);
       expect(data.current.beta).toBe(20);
       expect(data.current.gamma).toBe(50);
-      expect(data.key).toBe(ApiShelfTestKey);
+      expect(data.subscriptionKey).toBe(ApiShelfTestKey);
 
       expect(sub1.unsubscribeApiShelf()).toBeTruthy();
       expect(sub1.unsubscribeApiShelf()).toBeFalsy();
@@ -44,7 +44,7 @@ describe('Test API Shelf', () => {
         expect(data).not.toBeNull();
         expect(data.current).not.toBeNull();
         expect(data.previous).not.toBeNull();
-        expect(data.key).not.toBeNull();
+        expect(data.subscriptionKey).not.toBeNull();
 
         expect(data.current.red).toBe(100);
         expect(data.current.green).toBe(200);
@@ -54,7 +54,7 @@ describe('Test API Shelf', () => {
         expect(data.previous.beta).toBe(20);
         expect(data.previous.gamma).toBe(50);
 
-        expect(data.key).toBe(ApiShelfTestKey);
+        expect(data.subscriptionKey).toBe(ApiShelfTestKey);
 
         expect(sub2.unsubscribeApiShelf()).toBeTruthy();
         expect(sub2.unsubscribeApiShelf()).toBeFalsy();
@@ -76,12 +76,12 @@ describe('Test API Shelf', () => {
         expect(data).not.toBeUndefined();
         expect(data.current).not.toBeNull();
         expect(data.previous).toBeNull();
-        expect(data.key).not.toBeNull();
+        expect(data.subscriptionKey).not.toBeNull();
 
         expect(data.current.alfa).toBe(10);
         expect(data.current.beta).toBe(20);
         expect(data.current.gamma).toBe(50);
-        expect(data.key).toBe(ApiShelfTestKey);
+        expect(data.subscriptionKey).toBe(ApiShelfTestKey);
         done();
       },
       true,
@@ -104,7 +104,7 @@ describe('Test API Shelf', () => {
     if (data) {
       expect(data.current).not.toBeNull();
       expect(data.previous).toBeNull();
-      expect(data.key).toBe(ApiShelfTestKey);
+      expect(data.subscriptionKey).toBe(ApiShelfTestKey);
 
       expect(data.current.alfa).toBe(10);
       expect(data.current.beta).toBe(20);
@@ -148,5 +148,18 @@ describe('Test API Shelf', () => {
     } catch (err: any) {
       expect(err.message).toBe('Invalid subscription key or url.');
     }
+  });
+
+  test('Should test unsubscribing', (done) => {
+    const ApiShelfTestKey = 'TEST_DEMO_API_SHELF_KEY_4';
+    const sub = subscribeApiShelf(ApiShelfTestKey, (data: ShelfData) => {});
+
+    const doUnsub = async () => {
+      expect(sub.unsubscribeApiShelf()).toBeTruthy();
+      expect(sub.unsubscribeApiShelf()).toBeFalsy();
+      done();
+    };
+
+    doUnsub();
   });
 });

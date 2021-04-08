@@ -56,9 +56,9 @@ export default class ApiShelfManager {
             } else {
               shelf = {
                 data: {
-                  key: subscriptionKey,
                   current: data,
                   previous: null,
+                  subscriptionKey,
                 },
                 headers,
                 url,
@@ -87,7 +87,7 @@ export default class ApiShelfManager {
   static subscribeApiShelf(
     subscriptionKey: string,
     callback: ShelfEventHandler,
-    triggerNow = false,
+    triggerNow?: boolean,
   ): ApiShelfSubscription {
     const id = uuid();
     if (subscriptionKey && callback) {
@@ -102,7 +102,11 @@ export default class ApiShelfManager {
         }
       } else {
         const subsData: ApiSubscriptionData = {
-          data: { current: null, previous: null, key: subscriptionKey },
+          data: {
+            current: null,
+            previous: null,
+            subscriptionKey,
+          },
           url: '',
           headers: {},
           subscriptions: new Map().set(id, { subscriptionId: id, callback }),

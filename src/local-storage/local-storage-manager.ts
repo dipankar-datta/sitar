@@ -4,7 +4,8 @@ import { handleJsonParse, handleJsonStringify } from '../util/util';
 
 export interface LocalStorageData {
   subscriptionKey: string;
-  data: any;
+  current: any;
+  previous: any;
 }
 
 export type LocalStorageEventHandler = (data: LocalStorageData) => void;
@@ -68,7 +69,8 @@ class LocalStorageManager {
             if (subsData) {
               eventSub.callback({
                 subscriptionKey,
-                data: _.cloneDeep(data),
+                current: _.cloneDeep(data),
+                previous: _.cloneDeep(prevData),
               });
             }
           }
@@ -89,10 +91,14 @@ class LocalStorageManager {
         subscriptionData.subscriptions.set(id, { subscriptionId: id, callback });
 
         if (triggerNow) {
-          const localData = localStorage.getItem(subscriptionKey);
+          let localData = localStorage.getItem(subscriptionKey);
+          if (localData) {
+            localData = _.cloneDeep(handleJsonParse(localData));
+          }
           callback({
             subscriptionKey,
-            data: localData ? _.cloneDeep(handleJsonParse(localData)) : null,
+            current: localData,
+            previous: localData ? _.cloneDeep(localData) : null,
           });
         }
       } else {
@@ -119,7 +125,8 @@ class LocalStorageManager {
       subscriptionData?.subscriptions.forEach((value: LocalStorageEventSubscription, key: string) => {
         value.callback({
           subscriptionKey,
-          data: null,
+          current: null,
+          previous: _.cloneDeep(handleJsonParse(data)),
         });
       });
       this.map.delete(subscriptionKey);
@@ -133,8 +140,8 @@ class LocalStorageManager {
     return localData ? handleJsonParse(localData) : null;
   }
 
-  static unsubscribeLocalStorage(subscriptionKey: string, id: string): boolean {
+  static unsubscribeLocalStorage(subscriptionKey: string, subscriptionId: string): boolean {
     const subsData = this.map.get(subscriptionKey);
-    return subsData ? subsData.subscriptions.delete(id) : false;
+    return subsData ? subsData.subscriptions.delete(subscriptionId) : false;
   }
 }
