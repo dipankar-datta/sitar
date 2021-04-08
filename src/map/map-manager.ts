@@ -81,7 +81,7 @@ class MapManager {
         if (eventSub) {
           if (subData) {
             const eventData: MapData = {
-              mapKey: mapKey,
+              mapKey,
               current: newDataClone,
               previous: _.cloneDeep(prevData),
               map: _.cloneDeep(subData.map),
@@ -179,7 +179,7 @@ class MapManager {
       if (deleted) {
         subsData?.subscriptions.forEach((eventSub: MapEventSubscription) => {
           const eventData: MapData = {
-            mapKey: mapKey,
+            mapKey,
             current: null,
             previous: prevData,
             map: _.cloneDeep(subsData.map),
