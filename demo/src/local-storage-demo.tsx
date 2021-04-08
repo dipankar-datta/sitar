@@ -21,7 +21,7 @@ export class LocalStorageDemo extends Component<any, ILocalStorageDemoState> {
     componentDidMount() {        
         if (!this.localSubs) {
             this.localSubs = subscribeLocalStorage(LOCAL_STORAGE_TARGET_KEY, (mapData: LocalStorageData) => {
-                const displayData = JSON.stringify(mapData.data, null, 2);
+                const displayData = JSON.stringify(mapData.current, null, 2);
                 this.setState({displayData});
             }, true);
         }
@@ -29,9 +29,7 @@ export class LocalStorageDemo extends Component<any, ILocalStorageDemoState> {
     }
 
     componentWillUnmount() {
-        if (this.localSubs) {
-            this.localSubs.unsubscribeLocalStorage();
-        }
+        this.localSubs?.unsubscribeLocalStorage();
     }
 
     render() {       
@@ -39,9 +37,9 @@ export class LocalStorageDemo extends Component<any, ILocalStorageDemoState> {
             <div>
                 <label style={{fontWeight: 'bold'}}>Main Local Storage Data: </label> {this.state.displayData}
                 <br/><br/>
-                <div><LocalStorageUpdater/></div>
+                <div><LocalStorageUpdater componentName="Local Storage Component One"/></div>
                 <br/><br/>
-                <div><LocalStorageUpdater/></div>
+                <div><LocalStorageUpdater componentName="Local Storage Component Two"/></div>
             </div>
         );
     }
@@ -52,7 +50,7 @@ interface IMapUpdaterState {
     displayData: string,
     localData: string
 }
-export class LocalStorageUpdater extends Component<any, IMapUpdaterState> {
+export class LocalStorageUpdater extends Component<{componentName: string}, IMapUpdaterState> {
 
     private localSubs?: LocalStorageSubscription;
 
@@ -66,8 +64,8 @@ export class LocalStorageUpdater extends Component<any, IMapUpdaterState> {
     componentDidMount() {
         if (!this.localSubs) {
             this.localSubs = subscribeLocalStorage(LOCAL_STORAGE_TARGET_KEY, (localStorageData: LocalStorageData) => {
-                console.log('Local Storage Updated: ', localStorageData);
-                this.setState({displayData: JSON.stringify(localStorageData.data)});               
+                console.log(`${this.props.componentName}: `, localStorageData);
+                this.setState({displayData: JSON.stringify(localStorageData.current)});               
             });
         }
     }
@@ -101,7 +99,7 @@ export class LocalStorageUpdater extends Component<any, IMapUpdaterState> {
     render() {
         return (
             <div style={{border: '1px solid red', padding: '10px'}}>
-                <label style={{fontWeight: 'bold'}}>Local Storage Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>{this.props.componentName} Data: </label> {this.state.displayData}
                 <br/><br/>
                 <label>Value: </label><input onChange={this.valueChangeHandler} name='value' type="text"/>
                 <br/>&nbsp;<br/>

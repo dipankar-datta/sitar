@@ -38,9 +38,9 @@ export class SetDemo extends Component<any, ISetDemoState> {
             <div>
                 <label style={{fontWeight: 'bold'}}>Main Set Data: </label> {this.state.displayData}
                 <br/><br/>
-                <div><SetUpdater/></div>
+                <div><SetUpdater componentName="Set Component One"/></div>
                 <br/><br/>
-                <div><SetUpdater/></div>
+                <div><SetUpdater componentName="Set Component Two"/></div>
             </div>
         );
     }
@@ -51,7 +51,7 @@ interface ISetUpdaterState {
     displayData: string,
     setItem: string
 }
-export class SetUpdater extends Component<any, ISetUpdaterState> {
+export class SetUpdater extends Component<{componentName: string}, ISetUpdaterState> {
 
     private setSubs?: SetSubscription;
 
@@ -65,7 +65,7 @@ export class SetUpdater extends Component<any, ISetUpdaterState> {
     componentDidMount() {
         if (!this.setSubs) {
             this.setSubs = subscribeSet(SET_TARGET_KEY, (setData: SetData) => {
-                console.log('Set Updated: ', setData);
+                console.log(`${this.props.componentName}: `, setData);
                 this.setState({displayData: setData.set.join(',')});               
             });
         }
@@ -106,7 +106,7 @@ export class SetUpdater extends Component<any, ISetUpdaterState> {
     render() {
         return (
             <div style={{border: '1px solid red', padding: '10px'}}>
-                <label style={{fontWeight: 'bold'}}>Set Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>{this.props.componentName} Data: </label> {this.state.displayData}
                 <br/><br/>
                 <label>Item: </label><input onChange={this.keyChangeHandler} value={this.state.setItem} name='key' type="text"/>&nbsp;&nbsp;
                 <br/>&nbsp;<br/>

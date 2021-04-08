@@ -38,8 +38,8 @@ export default class App extends Component<any, IAppState> {
   loadRadioButtons = () => {
     const options = [
       {name: 'shelf', desc: 'Shelf'},
-      {name: 'map', desc: 'Map'},
       {name: 'apishelf', desc: 'Api Shelf'},
+      {name: 'map', desc: 'Map'},
       {name: 'set', desc: 'Set'},
       {name: 'local', desc: 'Local Storage'},
       {name: 'session', desc: 'Session Storage'},

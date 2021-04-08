@@ -26,15 +26,15 @@ export default class ApiShelfDemo extends Component<any, IApiShelfDemoState> {
         return (
             <div>
                 <label>Api Shelf</label>
-                <ApiTable/>
+                <ApiTable componentName="API Shelf Component One"/>
                 <br/>
-                <ApiTable/>       
+                <ApiTable componentName="API Shelf Component Two"/>
             </div>
         );
     }
 }
 
-class ApiTable extends Component<any, IApiShelfDemoState> {
+class ApiTable extends Component<{componentName: string}, IApiShelfDemoState> {
 
     subscription?: ApiShelfSubscription;
 
@@ -48,10 +48,10 @@ class ApiTable extends Component<any, IApiShelfDemoState> {
     componentDidMount() {
         if (!this.subscription) {
             this.subscription = subscribeApiShelf(API_SHELF_KEY, (shelfData: ShelfData) => {
-                console.log('API Shelf data: ', shelfData);
+                console.log(`${this.props.componentName}: `, shelfData);
                 this.setState({data: shelfData.current ? shelfData.current : []});
             }); 
-        }  
+        }
     }
 
     componentWillUnmount() {
@@ -75,6 +75,7 @@ class ApiTable extends Component<any, IApiShelfDemoState> {
     render() {
         return (
             <div style={{border: '1px solid red'}}>
+                <label style={{fontWeight: 'bold'}}>{this.props.componentName}</label>
                 <table>
                     <tbody>
                         <tr>

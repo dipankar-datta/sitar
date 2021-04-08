@@ -21,7 +21,7 @@ export class SessionStorageDemo extends Component<any, ISessionStorageDemoState>
     componentDidMount() {        
         if (!this.sessionSubs) {
             this.sessionSubs = subscribeSessionStorage(LOCAL_STORAGE_TARGET_KEY, (mapData: SessionStorageData) => {
-                const displayData = JSON.stringify(mapData.data, null, 2);
+                const displayData = JSON.stringify(mapData.current, null, 2);
                 this.setState({displayData});
             }, true);
         }
@@ -39,9 +39,9 @@ export class SessionStorageDemo extends Component<any, ISessionStorageDemoState>
             <div>
                 <label style={{fontWeight: 'bold'}}>Main Session Storage Data: </label> {this.state.displayData}
                 <br/><br/>
-                <div><SessionStorageUpdater/></div>
+                <div><SessionStorageUpdater componentName="Session Storage Component One"/></div>
                 <br/><br/>
-                <div><SessionStorageUpdater/></div>
+                <div><SessionStorageUpdater componentName="Session Storage Component Two"/></div>
             </div>
         );
     }
@@ -52,7 +52,7 @@ interface IMapUpdaterState {
     displayData: string,
     sessionData: string
 }
-export class SessionStorageUpdater extends Component<any, IMapUpdaterState> {
+export class SessionStorageUpdater extends Component<{componentName: string}, IMapUpdaterState> {
 
     private sessionSubs?: SessionStorageSubscription;
 
@@ -66,16 +66,14 @@ export class SessionStorageUpdater extends Component<any, IMapUpdaterState> {
     componentDidMount() {
         if (!this.sessionSubs) {
             this.sessionSubs = subscribeSessionStorage(LOCAL_STORAGE_TARGET_KEY, (sessionStorageData: SessionStorageData) => {
-                console.log('Session Storage Updated: ', sessionStorageData);
-                this.setState({displayData: JSON.stringify(sessionStorageData.data)});               
+                console.log(`${this.props.componentName}: `, sessionStorageData);
+                this.setState({displayData: JSON.stringify(sessionStorageData.current)});               
             });
         }
     }
 
     componentWillUnmount() {
-        if (this.sessionSubs) {
-            this.sessionSubs.unsubscribeSessionStorage();
-        }
+        this.sessionSubs?.unsubscribeSessionStorage();
     }
 
     keyChangeHandler = (ev: any) => {
@@ -101,7 +99,7 @@ export class SessionStorageUpdater extends Component<any, IMapUpdaterState> {
     render() {
         return (
             <div style={{border: '1px solid red', padding: '10px'}}>
-                <label style={{fontWeight: 'bold'}}>Session Storage Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>{this.props.componentName} Data: </label> {this.state.displayData}
                 <br/><br/>
                 <label>Value: </label><input onChange={this.valueChangeHandler} name='value' type="text"/>
                 <br/>&nbsp;<br/>
