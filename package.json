@@ -1,6 +1,6 @@
 {
   "name": "sitar",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Javascript library for browser storage and event management.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
