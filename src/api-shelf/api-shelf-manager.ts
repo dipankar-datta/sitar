@@ -15,7 +15,7 @@ export interface ApiShelfSubscription {
 }
 
 export const setApiShelf = async (subscriptionKey: string, url: string, headers?: { [key: string]: string }) => {
- await ApiShelfManager.setApiShelf(subscriptionKey, url, headers);
+  await ApiShelfManager.setApiShelf(subscriptionKey, url, headers);
 };
 
 export const getApiShelfData = (subscriptionKey: string): ShelfData | null => {
@@ -58,7 +58,7 @@ export default class ApiShelfManager {
                 data: {
                   current: data,
                   previous: null,
-                  subscriptionKey
+                  subscriptionKey,
                 },
                 headers,
                 url,
@@ -102,10 +102,10 @@ export default class ApiShelfManager {
         }
       } else {
         const subsData: ApiSubscriptionData = {
-          data: { 
-            current: null, 
+          data: {
+            current: null,
             previous: null,
-            subscriptionKey 
+            subscriptionKey,
           },
           url: '',
           headers: {},

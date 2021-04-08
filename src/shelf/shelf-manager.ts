@@ -84,7 +84,7 @@ class ShelfManager {
           data: {
             current: newDataClone,
             previous: null,
-            subscriptionKey
+            subscriptionKey,
           },
           subscriptions: new Map(),
         };
@@ -123,7 +123,7 @@ class ShelfManager {
           data: {
             current: null,
             previous: null,
-            subscriptionKey
+            subscriptionKey,
           },
           subscriptions: new Map(),
         };
@@ -160,7 +160,7 @@ class ShelfManager {
           data: {
             current: null,
             previous: null,
-            subscriptionKey
+            subscriptionKey,
           },
           subscriptions: new Map(),
         };
@@ -191,11 +191,10 @@ class ShelfManager {
         subData.subscriptions.forEach((eventSub: ShelfEventSubscription) => {
           if (eventSub.callback) {
             eventSub.callback({
-               current: null, 
-               previous: null,
-               subscriptionKey 
-              }
-            );
+              current: null,
+              previous: null,
+              subscriptionKey,
+            });
           } else if (eventSub.filteredCallback) {
             eventSub.filteredCallback(null);
           }

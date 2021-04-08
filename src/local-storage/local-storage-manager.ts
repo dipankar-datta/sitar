@@ -70,7 +70,7 @@ class LocalStorageManager {
               eventSub.callback({
                 subscriptionKey,
                 current: _.cloneDeep(data),
-                previous:  _.cloneDeep(prevData),
+                previous: _.cloneDeep(prevData),
               });
             }
           }
@@ -93,12 +93,12 @@ class LocalStorageManager {
         if (triggerNow) {
           let localData = localStorage.getItem(subscriptionKey);
           if (localData) {
-            localData =_.cloneDeep(handleJsonParse(localData));
+            localData = _.cloneDeep(handleJsonParse(localData));
           }
           callback({
             subscriptionKey,
             current: localData,
-            previous: localData ? _.cloneDeep(localData) : null
+            previous: localData ? _.cloneDeep(localData) : null,
           });
         }
       } else {
@@ -126,7 +126,7 @@ class LocalStorageManager {
         value.callback({
           subscriptionKey,
           current: null,
-          previous: _.cloneDeep(handleJsonParse(data))
+          previous: _.cloneDeep(handleJsonParse(data)),
         });
       });
       this.map.delete(subscriptionKey);

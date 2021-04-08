@@ -243,7 +243,7 @@ describe('Test MAP', () => {
   test('Test loading map with invalid subscription key and data.', () => {
     const testMapKey = 'TEST_MAP_KEY_11';
     try {
-      loadMap(null as any, {alfa: 70});
+      loadMap(null as any, { alfa: 70 });
     } catch (err: any) {
       if (err) {
         expect(err.message).toBe('Invalid subscription key or data.');
@@ -262,7 +262,7 @@ describe('Test MAP', () => {
   test('Test subscribing with invalid subscription key and callback.', () => {
     const testMapKey = 'TEST_MAP_KEY_12';
     try {
-      subscribeMap(null as any, ()=>{});
+      subscribeMap(null as any, () => {});
     } catch (err: any) {
       if (err) {
         expect(err.message).toBe('Invalid subscription key or callback.');

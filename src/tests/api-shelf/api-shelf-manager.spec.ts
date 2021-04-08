@@ -150,8 +150,7 @@ describe('Test API Shelf', () => {
     }
   });
 
-
-  test('Should test unsubscribing', done => {
+  test('Should test unsubscribing', (done) => {
     const ApiShelfTestKey = 'TEST_DEMO_API_SHELF_KEY_4';
     const sub = subscribeApiShelf(ApiShelfTestKey, (data: ShelfData) => {});
 
@@ -163,5 +162,4 @@ describe('Test API Shelf', () => {
 
     doUnsub();
   });
-
 });

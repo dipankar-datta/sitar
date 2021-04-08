@@ -85,7 +85,7 @@ class MapManager {
               current: newDataClone,
               previous: _.cloneDeep(prevData),
               map: _.cloneDeep(subData.map),
-              subscriptionKey
+              subscriptionKey,
             };
             eventSub.callback(eventData);
           }
@@ -118,7 +118,7 @@ class MapManager {
           current: null,
           previous: null,
           map: subData ? _.cloneDeep(subData.map) : null,
-          subscriptionKey
+          subscriptionKey,
         };
         eventSub.callback(eventData);
       });
@@ -141,7 +141,7 @@ class MapManager {
               current: null,
               previous: null,
               map: _.cloneDeep(subscriptionData.map),
-              subscriptionKey
+              subscriptionKey,
             };
             callback(eventData);
           }
@@ -183,12 +183,12 @@ class MapManager {
             current: null,
             previous: prevData,
             map: _.cloneDeep(subsData.map),
-            subscriptionKey
+            subscriptionKey,
           };
           eventSub.callback(eventData);
         });
       }
-  
+
       return deleted === true;
     } else {
       throw new Error('Invalid subscription key or map key.');
@@ -204,7 +204,7 @@ class MapManager {
         current: null,
         previous: null,
         map: null,
-        subscriptionKey
+        subscriptionKey,
       };
       eventSub.callback(eventData);
     });
