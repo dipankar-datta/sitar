@@ -37,7 +37,7 @@ export class SessionStorageDemo extends Component<any, ISessionStorageDemoState>
     render() {       
         return (
             <div>
-                <label style={{fontWeight: 'bold'}}>Main Session Storage Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>Session Storage Data: </label> {this.state.displayData}
                 <br/><br/>
                 <div><SessionStorageUpdater componentName="Session Storage Component One"/></div>
                 <br/><br/>

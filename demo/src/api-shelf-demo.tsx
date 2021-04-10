@@ -25,7 +25,8 @@ export default class ApiShelfDemo extends Component<any, IApiShelfDemoState> {
     render() {
         return (
             <div>
-                <label>Api Shelf</label>
+                <label style={{fontWeight: 'bold'}}>Api Shelf Data</label>
+                <br/><br/>
                 <ApiTable componentName="API Shelf Component One"/>
                 <br/>
                 <ApiTable componentName="API Shelf Component Two"/>

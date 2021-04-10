@@ -35,7 +35,7 @@ export class LocalStorageDemo extends Component<any, ILocalStorageDemoState> {
     render() {       
         return (
             <div>
-                <label style={{fontWeight: 'bold'}}>Main Local Storage Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>Local Storage Data: </label> {this.state.displayData}
                 <br/><br/>
                 <div><LocalStorageUpdater componentName="Local Storage Component One"/></div>
                 <br/><br/>

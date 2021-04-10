@@ -36,7 +36,7 @@ export class SetDemo extends Component<any, ISetDemoState> {
     render() {       
         return (
             <div>
-                <label style={{fontWeight: 'bold'}}>Main Set Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>Set Data: </label> {this.state.displayData}
                 <br/><br/>
                 <div><SetUpdater componentName="Set Component One"/></div>
                 <br/><br/>
