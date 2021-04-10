@@ -85,7 +85,11 @@ export class SessionStorageUpdater extends Component<{componentName: string}, IM
     }
 
     setHandler = () => {
-        setSessionStorage(LOCAL_STORAGE_TARGET_KEY, this.state.sessionData);
+        try {
+            setSessionStorage(LOCAL_STORAGE_TARGET_KEY, JSON.parse(this.state.sessionData));
+        } catch(err) {
+            alert('Input is JSON incompatible. Please provide JSON compatible input.');
+        }
     }
 
     deleteHandler = () => {

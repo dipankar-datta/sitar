@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import { setShelf, ShelfData, subscribeShelf, ShelfSubscription } from 'sitar';
 
 interface IUpdaterState {
-    shelfText: string,
-    localText: string
+    shelfText: any,
+    localText: any
 }
 
 interface IUpdaterProps {
@@ -22,7 +22,7 @@ export default class Updater extends Component<IUpdaterProps, IUpdaterState>{
             shelfText: '', 
             localText: props.initialText 
                 ? props.initialText 
-                : 'Initial local text'
+                : '100'
         };
     }
 
@@ -39,9 +39,15 @@ export default class Updater extends Component<IUpdaterProps, IUpdaterState>{
         this.setState({localText: ev.target.value});
     }
 
-    updateShelf = () => {
-        setShelf(this.props.shelfKey, this.state.localText);
+    updateShelf = () => {      
+        try {
+            setShelf(this.props.shelfKey, JSON.parse(this.state.localText));
+        }catch(err) {
+            alert('Input is JSON incompatible. Please provide JSON compatible input.');
+        }
     }
+
+   
 
     doUnsubscribe = () => {
         if (this.subscription) {
@@ -59,7 +65,7 @@ export default class Updater extends Component<IUpdaterProps, IUpdaterState>{
                 <div style={{fontWeight: 'bold', paddingBottom: '10px'}}>
                     <label >{this.props.componentName}</label>
                 </div>                
-                <label>Store Value: </label>{this.state.shelfText}<br/><br/>
+                <label>Store Value: </label>{JSON.stringify(this.state.shelfText)}<br/><br/>
                 <input onChange={this.inputChangeHandler} value={this.state.localText} type="text"/> &nbsp;&nbsp;
                 <button onClick={this.updateShelf} >Update</button> &nbsp;&nbsp;
                 <button onClick={this.doUnsubscribe} >Unsubscribe</button>

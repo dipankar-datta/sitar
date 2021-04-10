@@ -93,7 +93,11 @@ export class MapUpdater extends Component<IMapUpdaterProps, IMapUpdaterState> {
     }
 
     setHandler = () => {
-        setMap(MAP_TARGET_KEY, this.state.key, this.state.value);
+        try {
+            setMap(MAP_TARGET_KEY, this.state.key, JSON.parse(this.state.value));
+        } catch(err) {
+            alert('Input is JSON incompatible. Please provide JSON compatible input.');
+        }
     }
 
     deleteHandler = () => {

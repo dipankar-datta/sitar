@@ -77,6 +77,9 @@ class ShelfManager {
       let shelf = this.shelf.get(subscriptionKey);
       const newDataClone = _.cloneDeep(data);
       if (shelf) {
+        if (_.isEqual(shelf.data.current, data)) {
+          return;
+        }
         shelf.data.previous = _.cloneDeep(shelf.data.current);
         shelf.data.current = newDataClone;
       } else {

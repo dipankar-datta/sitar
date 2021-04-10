@@ -337,4 +337,20 @@ describe('Test Shelf', () => {
     expect(clearShelf(null as any)).toBeFalsy();
     done();
   });
+
+  test('Test Shelf with duplicate data', (done) => {
+    const testKey = 'SHELF_TEST_KEY_11';
+    const testData = { alfa: 10, beta: 20 };
+    setShelf(testKey, testData);
+    const sub = subscribeShelf(testKey, (shelfData: ShelfData) => {});
+    setShelf(testKey, testData);
+
+    const doUnsub = async () => {
+      expect(sub.unsubscribeShelf()).toBeTruthy();
+      expect(sub.unsubscribeShelf()).toBeFalsy();
+      done();
+    };
+
+    doUnsub();
+  });
 });

@@ -63,7 +63,9 @@ export default class App extends Component<any, IAppState> {
   render() {
     return (      
       <div style={{display: 'table', margin: 'auto', width: '90%'}}>
-        <h2>Sitar Demo</h2> <h4>Please open browser console to see emitted data.</h4>
+        <h2>Sitar Demo</h2> 
+        <h4>Please open browser console to see emitted data.</h4>
+        <h4>Also please provide JSON compatible input.</h4>
         <div>
           {this.loadRadioButtons()}
         </div>        
