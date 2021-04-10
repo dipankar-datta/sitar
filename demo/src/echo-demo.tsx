@@ -39,7 +39,7 @@ export class EchoDemo extends Component<any, IEchoDemoState> {
     render() {       
         return (
             <div>
-                <label style={{fontWeight: 'bold'}}>Main Echo Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>Echo Data: </label> {this.state.displayData}
                 <br/><br/>
                 <div><EchoUpdater componentName="Echo Component One" withArg={true}/></div>
                 <br/><br/>

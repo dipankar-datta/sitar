@@ -47,7 +47,7 @@ export default class ShelfDemo extends Component<any, IRowsState> {
         };
         return (
             <div>
-                <label style={{fontWeight: 'bold'}}>Target data: </label>{JSON.stringify(this.state.text)}
+                <label style={{fontWeight: 'bold'}}>Shelf Data: </label>{JSON.stringify(this.state.text)}
                 <div style={tdStyle} >
                     <Updater {...Object.assign({}, updateProps, {componentName: 'Shelf Component One'})}/>
                 </div>

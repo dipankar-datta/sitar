@@ -37,7 +37,7 @@ export class MapDemo extends Component<any, IMapDemoState> {
     render() {       
         return (
             <div>
-                <label style={{fontWeight: 'bold'}}>Main Map Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>Map Data: </label> {this.state.displayData}
                 <br/><br/>
                 <div><MapUpdater componentName="Map Component One"/></div>
                 <br/><br/>
