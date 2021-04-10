@@ -21,7 +21,7 @@ export class SetDemo extends Component<any, ISetDemoState> {
     componentDidMount() {        
         if (!this.setSubs) {
             this.setSubs = subscribeSet(SET_TARGET_KEY, (setData: SetData) => {
-                this.setState({displayData: setData.set.join(',')});
+                this.setState({displayData: JSON.stringify(setData.set, null, 2)});
             });
         }
         setSet(SET_TARGET_KEY, '100');
@@ -82,21 +82,19 @@ export class SetUpdater extends Component<{componentName: string}, ISetUpdaterSt
     }
 
     setHandler = () => {
-
-        let target: any;
-
-        if (this.state.setItem.indexOf('{') === 0 && this.state.setItem.indexOf('}') > -1) {
-            target = JSON.parse(this.state.setItem);
-        } else {
-            target = this.state.setItem.indexOf(',') > -1 ? this.state.setItem.split(','): this.state.setItem;
+        try {
+            setSet(SET_TARGET_KEY, JSON.parse(this.state.setItem));
+        } catch(err) {
+            alert('Input is JSON incompatible. Please provide JSON compatible input.');
         }
-        
-        setSet(SET_TARGET_KEY, target);
     }
 
     removeHandler = () => {
-        const target = this.state.setItem.indexOf(',') > -1 ? this.state.setItem.split(','): this.state.setItem;
-        removeFromSet(SET_TARGET_KEY, target);
+        try {
+            removeFromSet(SET_TARGET_KEY, JSON.parse(this.state.setItem));
+        } catch(err) {
+            alert('Input is JSON incompatible. Please provide JSON compatible input.');
+        }
     }
 
     unsubscribeHandler = () => {

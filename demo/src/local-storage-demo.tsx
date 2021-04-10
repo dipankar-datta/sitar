@@ -20,8 +20,8 @@ export class LocalStorageDemo extends Component<any, ILocalStorageDemoState> {
 
     componentDidMount() {        
         if (!this.localSubs) {
-            this.localSubs = subscribeLocalStorage(LOCAL_STORAGE_TARGET_KEY, (mapData: LocalStorageData) => {
-                const displayData = JSON.stringify(mapData.current, null, 2);
+            this.localSubs = subscribeLocalStorage(LOCAL_STORAGE_TARGET_KEY, (localStorageData: LocalStorageData) => {
+                const displayData = JSON.stringify(localStorageData.current, null, 2);
                 this.setState({displayData});
             }, true);
         }
@@ -46,11 +46,11 @@ export class LocalStorageDemo extends Component<any, ILocalStorageDemoState> {
 
 }
 
-interface IMapUpdaterState {
+interface ILocalStorageUpdaterState {
     displayData: string,
     localData: string
 }
-export class LocalStorageUpdater extends Component<{componentName: string}, IMapUpdaterState> {
+export class LocalStorageUpdater extends Component<{componentName: string}, ILocalStorageUpdaterState> {
 
     private localSubs?: LocalStorageSubscription;
 
@@ -80,12 +80,16 @@ export class LocalStorageUpdater extends Component<{componentName: string}, IMap
         this.setState({displayData: ev.target.value});
     }
 
-    valueChangeHandler = (ev: any) => {
+    valueChangeHandler = (ev: any) => {        
         this.setState({localData: ev.target.value});
     }
 
     setHandler = () => {
-        setLocalStorage(LOCAL_STORAGE_TARGET_KEY, this.state.localData);
+        try {
+            setLocalStorage(LOCAL_STORAGE_TARGET_KEY, JSON.parse(this.state.localData));
+        } catch(err) {
+            alert('Input is JSON incompatible. Please provide JSON compatible input.');
+        }
     }
 
     deleteHandler = () => {

@@ -41,9 +41,9 @@ export class EchoDemo extends Component<any, IEchoDemoState> {
             <div>
                 <label style={{fontWeight: 'bold'}}>Main Echo Data: </label> {this.state.displayData}
                 <br/><br/>
-                <div><EchoUpdater componentName="Echo Component One"/></div>
+                <div><EchoUpdater componentName="Echo Component One" withArg={true}/></div>
                 <br/><br/>
-                <div><EchoUpdater componentName="Echo Component Two"/></div>
+                <div><EchoUpdater componentName="Echo Component Two - Without Argument"/></div>
             </div>
         );
     }
@@ -56,7 +56,12 @@ interface IEchoUpdaterState {
     displayData: string,
     localData: string
 }
-class EchoUpdater extends Component<{componentName: string}, IEchoUpdaterState> {
+
+interface IEchoUpdaterProps {
+    componentName: string, 
+    withArg?: boolean
+}
+class EchoUpdater extends Component<IEchoUpdaterProps, IEchoUpdaterState> {
 
     private echoSubs?: EchoSubscription;
 
@@ -69,12 +74,18 @@ class EchoUpdater extends Component<{componentName: string}, IEchoUpdaterState> 
     }
     componentDidMount() {
         if (!this.echoSubs) {
-            this.echoSubs = subscribeEcho(ECHO_TARGET_KEY, (sessionStorageData: any) => {
-                console.log(`${this.props.componentName}: `, sessionStorageData);
-                if (sessionStorageData) {
-                    this.setState({displayData: ''+handleJsonStringify(sessionStorageData)});   
-                }                            
-            });
+            if (this.props.withArg) {
+                this.echoSubs = subscribeEcho(ECHO_TARGET_KEY, (sessionStorageData: any) => {
+                    console.log(`${this.props.componentName}: `, sessionStorageData);
+                    if (sessionStorageData) {
+                        this.setState({displayData: '' + handleJsonStringify(sessionStorageData)});   
+                    }                            
+                });
+            } else {
+                this.echoSubs = subscribeEcho(ECHO_TARGET_KEY, () => {
+                    console.log(this.props.componentName);
+                });
+            }
         }
     }
 
@@ -103,7 +114,9 @@ class EchoUpdater extends Component<{componentName: string}, IEchoUpdaterState> 
     render() {
         return (
             <div style={{border: '1px solid red', padding: '10px'}}>
-                <label style={{fontWeight: 'bold'}}>{this.props.componentName} Data: </label> {this.state.displayData}
+                <label style={{fontWeight: 'bold'}}>
+                    {this.props.withArg ? (this.props.componentName + ' Data: ') : this.props.componentName}
+                </label> {this.state.displayData}
                 <br/><br/>
                 <label>Value: </label><input onChange={this.valueChangeHandler} name='value' type="text"/>
                 <br/>&nbsp;<br/>

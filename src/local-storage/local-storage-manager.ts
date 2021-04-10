@@ -56,7 +56,7 @@ class LocalStorageManager {
       if (subsData) {
         if (!_.isEqual(prevData, newDataString)) {
           localStorage.setItem(subscriptionKey, newDataString ? newDataString : '');
-          dataAdded = data;
+          dataAdded = true;
         }
       } else {
         localStorage.setItem(subscriptionKey, newDataString ? newDataString : '');
@@ -64,13 +64,14 @@ class LocalStorageManager {
       }
 
       if (dataAdded) {
+        const parsedPrevioisData = handleJsonParse(prevData);
         subsData?.subscriptions.forEach((eventSub: LocalStorageEventSubscription) => {
           if (eventSub) {
             if (subsData) {
               eventSub.callback({
                 subscriptionKey,
                 current: _.cloneDeep(data),
-                previous: _.cloneDeep(prevData),
+                previous: _.cloneDeep(parsedPrevioisData),
               });
             }
           }

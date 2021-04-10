@@ -56,7 +56,7 @@ class SessionStorageManager {
       if (subsData) {
         if (!_.isEqual(prevData, newDataString)) {
           sessionStorage.setItem(subscriptionKey, newDataString ? newDataString : '');
-          dataAdded = data;
+          dataAdded = true;
         }
       } else {
         sessionStorage.setItem(subscriptionKey, newDataString ? newDataString : '');
@@ -64,12 +64,13 @@ class SessionStorageManager {
       }
 
       if (dataAdded) {
+        const parsedPrevioisData = handleJsonParse(prevData);
         subsData?.subscriptions.forEach((eventSub: SessionStorageEventSubscription) => {
           if (subsData) {
             eventSub.eventHandler({
               subscriptionKey,
               current: _.cloneDeep(data),
-              previous: prevData ? _.cloneDeep(handleJsonParse(prevData)) : null,
+              previous: prevData ? _.cloneDeep(parsedPrevioisData) : null,
             });
           }
         });

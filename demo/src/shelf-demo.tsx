@@ -5,7 +5,7 @@ import Updater from './updater/updater';
 export const SHELF_DEMO_KEY = 'SHELF_DEMO_KEY';
 
 interface IRowsState {
-    text: string,
+    text: any,
     latestData: string
 }
 
@@ -43,11 +43,11 @@ export default class ShelfDemo extends Component<any, IRowsState> {
         const tdStyle = { marginTop:'20px'};
         const updateProps = {
             shelfKey: SHELF_DEMO_KEY,
-            initialText: 'Initi local text'
+            initialText: '50'
         };
         return (
             <div>
-                <label style={{fontWeight: 'bold'}}>Target data: </label>{this.state.text}
+                <label style={{fontWeight: 'bold'}}>Target data: </label>{JSON.stringify(this.state.text)}
                 <div style={tdStyle} >
                     <Updater {...Object.assign({}, updateProps, {componentName: 'Shelf Component One'})}/>
                 </div>

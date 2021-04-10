@@ -468,7 +468,7 @@ console.log("Set removed: ", removed);
 ```
 
 ## 5. Local Storage
-Local Storage is a typical browser local storage. In addition to browser's local storage, Sitar provides event based subscription features on the same local storage. Applications can subscribe to changes in the specific local storage and access the local storage data seamelessly. This works in line only when the changes in the specific local storage data is created, updated and access through Sitar only. If the local storage created by Sitar is modified by other parts of the application without Sitar, then this features will break. It is highly recommended to not modify local storage data created by Sitar.<br>
+Local Storage is a typical browser local storage. In addition to browser's local storage, Sitar provides event based subscription features on the same local storage. Applications can subscribe to changes in the specific local storage and access the local storage data seamelessly. This works in line only when the changes in the specific local storage data is created, updated and access through Sitar only. If the local storage created by Sitar is modified by other parts of the application without Sitar, then this features will break. It is highly recommended to not modify local storage data created by Sitar. Also Local Storage in Sitar only supports JSON compatible data. A simple word would not work in Local Storage in Sitar as JSON.parse will not work with it.<br>
 
 Following are the features provided by Local Storage in Sitar.
 
